@@ -5,6 +5,13 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vacuum", "Vacuum\Vacuum.fsproj", "{C41A92B8-6E18-4E29-B3DE-849E1EA1AD46}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C2F9A04-4AE3-47CE-BE00-7801D562F417}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		License.md = License.md
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
