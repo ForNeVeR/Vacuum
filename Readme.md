@@ -10,7 +10,12 @@ Simply execute `Vacuum.exe`. It will remove any entries in your temp directory
 that weren't touched in the last month.
 
 "Entry" is either a file or a directory. Directory counts as "touched" if any of
-its children was touched in the month period.
+its children was touched in the month period. Vacuum considers the following
+dates when examining the files (as they're reported by the filesystem):
+
+- creation date
+- last write date
+- last access date
 
 Licensing
 ---------
