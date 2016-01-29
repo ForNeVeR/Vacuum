@@ -29,7 +29,9 @@ let private needToRemoveTopLevel date path =
         if File.Exists path then
             lastTouchedEarlierThan date path
         else
-            Directory.EnumerateFileSystemEntries (path, "*.*", SearchOption.AllDirectories)
+            [| Seq.singleton path
+               Directory.EnumerateFileSystemEntries (path, "*.*", SearchOption.AllDirectories) |]
+            |> Seq.concat
             |> Seq.forall (lastTouchedEarlierThan date)
     with
     | :? UnauthorizedAccessException -> false
