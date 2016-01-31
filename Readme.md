@@ -17,6 +17,10 @@ dates when examining the files (as they're reported by the filesystem):
 - last write date
 - last access date
 
+Consult the embedded help system for detailed parameter help, for example:
+
+    Vacuum.exe help clean
+
 Licensing
 ---------
 

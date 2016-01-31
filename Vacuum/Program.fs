@@ -88,25 +88,28 @@ let private clean directory =
 let main args =
     let command = CommandLine.Parser.Default.ParseArguments (args, [| typeof<Clean> |])
     match command with
-    | :? CommandLine.Parsed<obj> as command ->
-        let directory = Path.GetTempPath ()
-        let result = clean directory
+    | :? CommandLine.Parsed<obj> as arg ->
+        match arg.Value with
+        | :? Clean as options ->
+            let directory = defaultArg options.Directory (Path.GetTempPath ())
+            let result = clean directory
 
-        info (sprintf "\nDirectory %s cleaned up" result.Directory)
-        info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
+            info (sprintf "\nDirectory %s cleaned up" result.Directory)
+            info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
 
-        info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
-        info (sprintf "  Items after cleanup: %d" result.ItemsAfter)
+            info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
+            info (sprintf "  Items after cleanup: %d" result.ItemsAfter)
 
-        let getResult r = defaultArg (Map.tryFind r result.States) 0
-        let successes = getResult Ok
-        let errors = getResult Error
+            let getResult r = defaultArg (Map.tryFind r result.States) 0
+            let successes = getResult Ok
+            let errors = getResult Error
 
-        printColor ConsoleColor.Green (sprintf "\n  Finished ok: %d" successes)
-        printColor ConsoleColor.Red (sprintf "  Finished with error: %d" errors)
+            printColor ConsoleColor.Green (sprintf "\n  Finished ok: %d" successes)
+            printColor ConsoleColor.Red (sprintf "  Finished with error: %d" errors)
 
-        info (sprintf "\n  Total time taken: %A" result.TimeTaken)
+            info (sprintf "\n  Total time taken: %A" result.TimeTaken)
 
-        0
+            0
+        | other -> failwithf "Internal error: unknown options %A" other
     | :? CommandLine.NotParsed<obj> as error -> 1
-    | other -> failwithf "Internal error: %A" other
+    | other -> failwithf "Internal error: unknown argument parse result %A" other
