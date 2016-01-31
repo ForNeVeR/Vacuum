@@ -6,6 +6,8 @@ open System.IO
 
 open Microsoft.VisualBasic.FileIO
 
+open Vacuum.Commands
+
 let printColor color (message : string) =
     let oldColor = Console.ForegroundColor
     Console.ForegroundColor <- color
@@ -83,23 +85,28 @@ let private clean directory =
       TimeTaken = time }
 
 [<EntryPoint>]
-let main _ =
-    let directory = Path.GetTempPath ()
-    let result = clean directory
+let main args =
+    let command = CommandLine.Parser.Default.ParseArguments (args, [| typeof<Clean> |])
+    match command with
+    | :? CommandLine.Parsed<obj> as command ->
+        let directory = Path.GetTempPath ()
+        let result = clean directory
 
-    info (sprintf "\nDirectory %s cleaned up" result.Directory)
-    info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
+        info (sprintf "\nDirectory %s cleaned up" result.Directory)
+        info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
 
-    info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
-    info (sprintf "  Items after cleanup: %d" result.ItemsAfter)
+        info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
+        info (sprintf "  Items after cleanup: %d" result.ItemsAfter)
 
-    let getResult r = defaultArg (Map.tryFind r result.States) 0
-    let successes = getResult Ok
-    let errors = getResult Error
+        let getResult r = defaultArg (Map.tryFind r result.States) 0
+        let successes = getResult Ok
+        let errors = getResult Error
 
-    printColor ConsoleColor.Green (sprintf "\n  Finished ok: %d" successes)
-    printColor ConsoleColor.Red (sprintf "  Finished with error: %d" errors)
+        printColor ConsoleColor.Green (sprintf "\n  Finished ok: %d" successes)
+        printColor ConsoleColor.Red (sprintf "  Finished with error: %d" errors)
 
-    info (sprintf "\n  Total time taken: %A" result.TimeTaken)
+        info (sprintf "\n  Total time taken: %A" result.TimeTaken)
 
-    0
+        0
+    | :? CommandLine.NotParsed<obj> as error -> 1
+    | other -> failwithf "Internal error: %A" other
