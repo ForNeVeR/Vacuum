@@ -58,14 +58,14 @@ let private remove item =
 
         Vacuum.Error
 
-let private clean directory =
+let private clean directory period =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
     info (sprintf "Cleaning directory %s" directory)
 
     let itemsBefore = itemCount directory
-    let date = DateTime.UtcNow.AddMonths -1
+    let date = TimePeriod.subtract DateTime.UtcNow period
 
     let states =
         Directory.EnumerateFileSystemEntries directory
@@ -91,7 +91,8 @@ let main args =
     | :? Parsed<Clean> as command ->
         let options = command.Value
         let directory = defaultArg options.Directory (Path.GetTempPath ())
-        let result = clean directory
+        let period = TimePeriod.parse (defaultArg options.Period "1M")
+        let result = clean directory period
 
         info (sprintf "\nDirectory %s cleaned up" result.Directory)
         info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))

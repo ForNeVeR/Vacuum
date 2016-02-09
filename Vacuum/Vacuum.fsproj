@@ -60,6 +60,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Commands.fs" />
     <Compile Include="CleanResult.fs" />
+    <Compile Include="TimePeriod.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
