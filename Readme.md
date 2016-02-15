@@ -6,8 +6,8 @@ Windows temporary directory cleanup tool.
 Usage
 -----
 
-Simply execute `Vacuum.exe clean`. It will remove any entries in your temp
-directory that weren't touched in the last month.
+Simply execute `Vacuum.exe`. It will remove any entries in your temp directory
+that weren't touched in the last month.
 
 "Entry" is either a file or a directory. Directory counts as "touched" if any of
 its children was touched in the month period. Vacuum considers the following
@@ -17,9 +17,9 @@ dates when examining the files (as they're reported by the filesystem):
 - last write date
 - last access date
 
-Consult the embedded help system for detailed parameter help, for example:
+Consult the embedded help system for the detailed parameter manual:
 
-    Vacuum.exe help clean
+    Vacuum.exe --help
 
 Licensing
 ---------
