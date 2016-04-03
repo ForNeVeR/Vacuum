@@ -9,6 +9,8 @@ open Microsoft.VisualBasic.FileIO
 
 open Vacuum.Commands
 
+let defaultPeriod = 30
+
 let printColor color (message : string) =
     let oldColor = Console.ForegroundColor
     Console.ForegroundColor <- color
@@ -58,21 +60,21 @@ let private remove item =
 
         Vacuum.Error
 
-let private clean directory period =
+let private clean directory (period : int) =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
     info (sprintf "Cleaning directory %s" directory)
 
     let itemsBefore = itemCount directory
-    let date = TimePeriod.subtract DateTime.UtcNow period
+    let date = DateTime.UtcNow.AddDays (-(double period))
 
     let states =
         Directory.EnumerateFileSystemEntries directory
         |> Seq.filter (needToRemoveTopLevel date)
         |> Seq.map remove
         |> Seq.groupBy id
-        |> Seq.map (fun (key, s) -> (key, Seq.length s))
+        |> Seq.map (fun (key, s) -> key, Seq.length s)
         |> Map.ofSeq
 
     let itemsAfter = itemCount directory
@@ -91,7 +93,7 @@ let main args =
     | :? Parsed<Clean> as command ->
         let options = command.Value
         let directory = defaultArg options.Directory (Path.GetTempPath ())
-        let period = TimePeriod.parse (defaultArg options.Period "1M")
+        let period = defaultArg options.Period defaultPeriod
         let result = clean directory period
 
         info (sprintf "\nDirectory %s cleaned up" result.Directory)
