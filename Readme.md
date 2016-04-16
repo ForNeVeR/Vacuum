@@ -1,4 +1,4 @@
-Vacuum [![Status Aquana](https://img.shields.io/badge/status-aquana-yellowgreen.svg)](https://github.com/ForNeVeR/andivionian-status-classifier)
+Vacuum [![Status Aquana][status-aquana]][andivionian-status-classifier] [![Build status][build-status-appveyor]][appveyor]
 ======
 
 Windows temporary directory cleanup tool.
@@ -28,3 +28,9 @@ Copyright © 2016 Friedrich von Never <friedrich@fornever.me>
 
 This software may be used under the terms of the MIT license, see `License.md`
 for details.
+
+[andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
+[appveyor]: https://ci.appveyor.com/project/ForNeVeR/Vacuum/branch/develop
+
+[build-status-appveyor]: https://ci.appveyor.com/api/projects/status/9mogckfsaxpvmfef/branch/develop?svg=true
+[status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg

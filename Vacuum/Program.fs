@@ -4,7 +4,6 @@ open System
 open System.Diagnostics
 open System.IO
 
-open CommandLine
 open Microsoft.VisualBasic.FileIO
 
 open Vacuum.Commands
@@ -89,9 +88,8 @@ let private clean directory (period : int) =
 
 [<EntryPoint>]
 let main args =
-    match Parser.Default.ParseArguments<Clean> args with
-    | :? Parsed<Clean> as command ->
-        let options = command.Value
+    match CommandLineParser.parse args with
+    | Some options ->
         let directory = defaultArg options.Directory (Path.GetTempPath ())
         let period = defaultArg options.Period defaultPeriod
         let result = clean directory period
@@ -112,5 +110,4 @@ let main args =
         info (sprintf "\n  Total time taken: %A" result.TimeTaken)
 
         0
-    | :? NotParsed<Clean> -> 1
-    | other -> failwithf "Internal error: unknown argument parse result %A" other
+    | None -> 1

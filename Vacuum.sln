@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vacuum", "Vacuum\Vacuum.fsproj", "{C41A92B8-6E18-4E29-B3DE-849E1EA1AD46}"
 EndProject
@@ -9,9 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
 		License.md = License.md
 		Readme.md = Readme.md
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vacuum.Tests", "Vacuum.Tests\Vacuum.Tests.fsproj", "{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +26,10 @@ Global
 		{C41A92B8-6E18-4E29-B3DE-849E1EA1AD46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C41A92B8-6E18-4E29-B3DE-849E1EA1AD46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C41A92B8-6E18-4E29-B3DE-849E1EA1AD46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
