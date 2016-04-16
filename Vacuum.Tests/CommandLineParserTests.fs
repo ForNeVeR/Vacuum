@@ -20,9 +20,9 @@ let ``--space parameter should be parsed with postfix`` () =
         let options = parseCommandLine args
         Assert.Equal (result, Option.get options.BytesToFree)
 
-    let k = 1024
-    let M = k * 1024
-    test "10" 10
-    test "10k" (10 * k)
-    test "10m" (10 * M)
-    test "10M" (10 * M)
+    let k = 1024L
+    let M = k * 1024L
+    test "10" 10L
+    test "10k" (10L * k)
+    test "10m" (10L * M)
+    test "10M" (10L * M)

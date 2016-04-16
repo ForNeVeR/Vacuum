@@ -22,7 +22,7 @@ type Clean =
     member this.BytesToFree =
         let allButLast (s : string) = s.Substring (0, s.Length - 1)
         match this.Space with
-        | Some space when space.ToLowerInvariant().EndsWith("k") -> Some (1024 * (int <| allButLast space))
-        | Some space when space.ToLowerInvariant().EndsWith("m") -> Some (1024 * 1024 * (int <| allButLast space))
-        | Some space -> Some (int space)
+        | Some space when space.ToLowerInvariant().EndsWith("k") -> Some (1024L * (int64 <| allButLast space))
+        | Some space when space.ToLowerInvariant().EndsWith("m") -> Some (1024L * 1024L * (int64 <| allButLast space))
+        | Some space -> Some (int64 space)
         | None -> None

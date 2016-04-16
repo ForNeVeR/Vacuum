@@ -53,6 +53,8 @@
     <Content Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="CommandLineParserTests.fs" />
+    <Compile Include="Utils.fs" />
+    <Compile Include="CleanTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
