@@ -61,6 +61,7 @@
     <Compile Include="Commands.fs" />
     <Compile Include="CommandLineParser.fs" />
     <Compile Include="CleanResult.fs" />
+    <Compile Include="NativeFunctions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

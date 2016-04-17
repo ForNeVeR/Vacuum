@@ -55,6 +55,7 @@
     <Compile Include="CommandLineParserTests.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="CleanTests.fs" />
+    <Compile Include="NativeFunctionsTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
