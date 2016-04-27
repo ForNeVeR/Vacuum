@@ -10,8 +10,9 @@ type FileInfo =
 
 type DisposableDirectory =
     { Path : string }
-    member this.GetFiles () : string[] =
-        Directory.GetFileSystemEntries this.Path
+    member this.GetFiles () : string seq =
+        Directory.EnumerateFileSystemEntries this.Path
+        |> Seq.map Path.GetFileName
     interface IDisposable with
         member this.Dispose () =
             Directory.Delete (this.Path, true)

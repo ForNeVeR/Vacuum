@@ -23,10 +23,13 @@ let private error = printColor ConsoleColor.Red
 let private itemCount path =
     (Directory.GetFileSystemEntries path).Length
 
-let lastTouchedEarlierThan date path =
-    File.GetCreationTimeUtc path < date
-    && File.GetLastAccessTimeUtc path < date
-    && File.GetLastWriteTimeUtc path < date
+let private getLastFileAccessDate path =
+    [| File.GetCreationTimeUtc; File.GetLastAccessTimeUtc; File.GetLastWriteTimeUtc |]
+    |> Array.map (fun x -> x path)
+    |> Array.max
+
+let private lastTouchedEarlierThan date path =
+    getLastFileAccessDate path < date
 
 let private needToRemoveTopLevel date path =
     try
@@ -59,17 +62,50 @@ let private remove item =
 
         Vacuum.Error
 
+let rec private getEntrySize path =
+    if File.Exists path then
+        NativeFunctions.getCompressedFileSize path
+    else
+        Directory.EnumerateFileSystemEntries (path, "*.*", SearchOption.AllDirectories)
+        |> Seq.map getEntrySize
+        |> Seq.sum
+
+let private takeBytes bytes (files : string seq) =
+    seq {
+        let enumerator = files.GetEnumerator()
+        try
+            let mutable currentSize = 0L
+            while currentSize < bytes && enumerator.MoveNext() do
+                let entry = enumerator.Current
+                currentSize <- currentSize + getEntrySize entry
+                yield entry
+        finally
+            enumerator.Dispose()
+    }
+
 let clean (directory : string) (date : DateTime) (bytesToFree : int64 option) : CleanResult =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
     info (sprintf "Cleaning directory %s" directory)
+    if bytesToFree.IsSome then
+        info (sprintf "Cleaning %d bytes" bytesToFree.Value)
 
     let itemsBefore = itemCount directory
 
+    let allEntries = Directory.EnumerateFileSystemEntries directory
+    let filesToDelete =
+        match bytesToFree with
+        | Some bytes ->
+            allEntries
+            |> Seq.sortBy getLastFileAccessDate
+            |> takeBytes bytes
+        | None ->
+            allEntries
+            |> Seq.filter (needToRemoveTopLevel date)
+
     let states =
-        Directory.EnumerateFileSystemEntries directory
-        |> Seq.filter (needToRemoveTopLevel date)
+        filesToDelete
         |> Seq.map remove
         |> Seq.groupBy id
         |> Seq.map (fun (key, s) -> key, Seq.length s)
