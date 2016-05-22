@@ -2,7 +2,7 @@
 
 open System
 open System.Diagnostics
-open System.IO
+open Pri.LongPath
 
 open Microsoft.VisualBasic.FileIO
 
@@ -37,7 +37,7 @@ let private needToRemoveTopLevel date path =
             lastTouchedEarlierThan date path
         else
             [| Seq.singleton path
-               Directory.EnumerateFileSystemEntries (path, "*.*", SearchOption.AllDirectories) |]
+               Directory.EnumerateFileSystemEntries (path, "*.*", IO.SearchOption.AllDirectories) |]
             |> Seq.concat
             |> Seq.forall (lastTouchedEarlierThan date)
     with
@@ -66,7 +66,7 @@ let rec private getEntrySize path =
     if File.Exists path then
         NativeFunctions.getCompressedFileSize path
     else
-        Directory.EnumerateFileSystemEntries (path, "*.*", SearchOption.AllDirectories)
+        Directory.EnumerateFileSystemEntries (path, "*.*", IO.SearchOption.AllDirectories)
         |> Seq.map getEntrySize
         |> Seq.sum
 
