@@ -17,8 +17,8 @@ let ``Cleaner should always clean the bytes it told to`` () =
     Assert.Equal<string> ([| "file2.txt" |], directory.GetFiles())
 
 [<Fact>]
-let ``Cleaner should be able to delete long paths`` () =
+let ``Cleaner should not fail on long paths`` () =
     let fileName = String ('x', 251) + ".txt"
     use directory = prepareEnvironment [ { Name = fileName; Date = DateTime (2010, 1, 1); Size = 0L } ]
     ignore <| Program.clean directory.Path (DateTime (2011, 1, 1)) None
-    Assert.Equal<string> ([| fileName |], directory.GetFiles())
+    Assert.Equal<string> ([| fileName |], directory.GetFiles()) // TODO: It should delete the file actually
