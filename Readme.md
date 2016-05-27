@@ -21,6 +21,12 @@ Consult the embedded help system for the detailed parameter manual:
 
     Vacuum.exe --help
 
+Download
+--------
+
+To download Vacuum binary distribution, please visit [GitHub releases
+section][releases].
+
 Licensing
 ---------
 
@@ -33,4 +39,5 @@ for details.
 [appveyor]: https://ci.appveyor.com/project/ForNeVeR/Vacuum/branch/develop
 
 [build-status-appveyor]: https://ci.appveyor.com/api/projects/status/9mogckfsaxpvmfef/branch/develop?svg=true
+[releases]: https://github.com/ForNeVeR/Vacuum/releases
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
