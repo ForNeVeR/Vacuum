@@ -25,7 +25,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\Vacuum.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>clean</StartArguments>
+    <StartArguments>
+    </StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -75,7 +76,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Pri.LongPath">
-      <HintPath>..\packages\Pri.LongPath.2.0.30\lib\net45\Pri.LongPath.dll</HintPath>
+      <HintPath>..\packages\Pri.LongPath.2.0.40\lib\net45\Pri.LongPath.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

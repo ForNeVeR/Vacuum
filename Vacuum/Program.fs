@@ -42,6 +42,9 @@ let private needToRemoveTopLevel date path =
             |> Seq.forall (lastTouchedEarlierThan date)
     with
     | :? UnauthorizedAccessException -> false
+    | ex ->
+        let message = sprintf "Error when scanning %s" path
+        raise <| Exception(message, ex)
 
 let private remove item =
     try
