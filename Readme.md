@@ -27,14 +27,6 @@ Download
 To download Vacuum binary distribution, please visit [GitHub releases
 section][releases].
 
-Licensing
----------
-
-Copyright © 2016 Friedrich von Never <friedrich@fornever.me>
-
-This software may be used under the terms of the MIT license, see `License.md`
-for details.
-
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [appveyor]: https://ci.appveyor.com/project/ForNeVeR/Vacuum/branch/develop
 
