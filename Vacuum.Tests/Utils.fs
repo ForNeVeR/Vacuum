@@ -1,7 +1,7 @@
 ﻿module Vacuum.Tests.Utils
 
 open System
-open Pri.LongPath
+open System.IO
 
 type FileInfo =
     { Name : string

@@ -2,7 +2,7 @@
 
 open System
 open System.Diagnostics
-open Pri.LongPath
+open System.IO
 
 open Microsoft.VisualBasic.FileIO
 
