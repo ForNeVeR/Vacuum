@@ -1,36 +1,56 @@
 ﻿module Vacuum.Tests.Utils
 
 open System
-open System.IO
 
-type FileInfo =
-    { Name : string
-      Date : DateTime
-      Size : int64 }
+open Vacuum.FileSystem
 
-type DisposableDirectory =
-    { Path : string }
+type FileInfo = {
+    Path: string
+    Date: DateTime
+    Size: int64
+}
+
+type DisposableDirectory = {
+    Path: Path
+}
+    with
     member this.GetFiles () : string seq =
-        Directory.EnumerateFileSystemEntries this.Path
-        |> Seq.map Path.GetFileName
+        Directory.enumerateFileSystemEntries this.Path
+        |> Seq.map (fun p -> p.FileName)
     interface IDisposable with
         member this.Dispose () =
-            Directory.Delete (this.Path, true)
+            Directory.deleteRecursive this.Path
 
-let private setDate setters args = setters |> Seq.iter ((|>) args)
+let private setDate setters path date =
+    setters
+    |> Seq.iter(fun setter -> setter path date)
 
 let private setFileDate =
-    setDate [ File.SetCreationTimeUtc; File.SetLastAccessTimeUtc; File.SetLastWriteTimeUtc ]
+    setDate [| File.setCreationTimeUtc; File.setLastAccessTimeUtc; File.setLastWriteTimeUtc |]
 
 let private setDirectoryDate =
-    setDate [ Directory.SetCreationTimeUtc; Directory.SetLastAccessTimeUtc; Directory.SetLastWriteTimeUtc ]
+    setDate [| Directory.setCreationTimeUtc; Directory.setLastAccessTimeUtc; Directory.setLastWriteTimeUtc |]
 
-let private createFile location file =
-    let path = Path.Combine (location, file.Name)
+let private setTreeDates (root: Path) (child: Path) minDate =
+    let mutable current = child.GetFullPath()
+    while current <> root.GetFullPath() do
+        if File.exists current
+        then setFileDate current minDate
+        else setDirectoryDate current minDate
+
+        current <- current.GetParent()
+
+let private createFile (rootLocation: Path) minDate (file: FileInfo) =
+    let path = rootLocation / file.Path
+
+    let location = path.GetParent()
+    Directory.create location
+
     do
-        use stream = File.Create path
+        use stream = File.create path
         stream.SetLength file.Size
-    setFileDate (path, file.Date)
+    setFileDate path file.Date
+    setTreeDates rootLocation location minDate
 
 let prepareEnvironment (infos : FileInfo seq) : DisposableDirectory =
     let infos' = Seq.cache infos
@@ -40,11 +60,11 @@ let prepareEnvironment (infos : FileInfo seq) : DisposableDirectory =
         |> Seq.min
 
     let name = string <| Guid.NewGuid ()
-    let path = Path.Combine (Path.GetTempPath (), name)
+    let path = Directory.getTempPath() / name
 
-    ignore <| Directory.CreateDirectory path
-    setDirectoryDate (path, minDate)
+    Directory.create path
+    setDirectoryDate path minDate
 
-    infos' |> Seq.iter (createFile path)
+    infos' |> Seq.iter (createFile path minDate)
 
     { Path = path }

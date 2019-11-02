@@ -2,11 +2,9 @@
 
 open System
 open System.Diagnostics
-open System.IO
-
-open Microsoft.VisualBasic.FileIO
 
 open Vacuum.Commands
+open Vacuum.FileSystem
 
 let defaultPeriod = 30
 
@@ -20,11 +18,11 @@ let private info = printColor ConsoleColor.White
 let private ok () = printColor ConsoleColor.Green "ok"
 let private error = printColor ConsoleColor.Red
 
-let private itemCount path =
-    (Directory.GetFileSystemEntries path).Length
+let private itemCount =
+    Directory.enumerateFileSystemEntries >> Seq.length
 
 let private getLastFileAccessDate path =
-    [| File.GetCreationTimeUtc; File.GetLastAccessTimeUtc; File.GetLastWriteTimeUtc |]
+    [| File.getCreationTimeUtc; File.getLastAccessTimeUtc; File.getLastWriteTimeUtc |]
     |> Array.map (fun x -> x path)
     |> Array.max
 
@@ -33,27 +31,27 @@ let private lastTouchedEarlierThan date path =
 
 let private needToRemoveTopLevel date path =
     try
-        if File.Exists path then
+        if File.exists path then
             lastTouchedEarlierThan date path
         else
             [| Seq.singleton path
-               Directory.EnumerateFileSystemEntries (path, "*.*", IO.SearchOption.AllDirectories) |]
+               Directory.enumerateFileSystemEntriesRecursively path |]
             |> Seq.concat
             |> Seq.forall (lastTouchedEarlierThan date)
     with
     | :? UnauthorizedAccessException -> false
     | ex ->
-        let message = sprintf "Error when scanning %s" path
+        let message = sprintf "Error when scanning %s" (path.ToString())
         raise <| Exception(message, ex)
 
 let private remove item =
     try
-        if File.Exists item then
-            printf "Removing file %s... " item
-            FileSystem.DeleteFile (item, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
+        if File.exists item then
+            printf "Removing file %s... " (item.ToString())
+            File.recycle item
         else
-            printf "Removing directory %s... " item
-            FileSystem.DeleteDirectory (item, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
+            printf "Removing directory %s... " (item.ToString())
+            Directory.recycle item
 
         ok ()
 
@@ -66,14 +64,14 @@ let private remove item =
         Vacuum.Error
 
 let rec private getEntrySize path =
-    if File.Exists path then
+    if File.exists path then
         NativeFunctions.getCompressedFileSize path
     else
-        Directory.EnumerateFileSystemEntries (path, "*.*", IO.SearchOption.AllDirectories)
+        Directory.enumerateFileSystemEntriesRecursively path
         |> Seq.map getEntrySize
         |> Seq.sum
 
-let private takeBytes bytes (files : string seq) =
+let private takeBytes bytes (files: Path seq) =
     seq {
         let enumerator = files.GetEnumerator()
         try
@@ -86,17 +84,17 @@ let private takeBytes bytes (files : string seq) =
             enumerator.Dispose()
     }
 
-let clean (directory : string) (date : DateTime) (bytesToFree : int64 option) : CleanResult =
+let clean (directory: Path) (date: DateTime) (bytesToFree: int64 option): CleanResult =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
-    info (sprintf "Cleaning directory %s" directory)
+    info (sprintf "Cleaning directory %s"  (directory.ToString()))
     if bytesToFree.IsSome then
         info (sprintf "Cleaning %d bytes" bytesToFree.Value)
 
     let itemsBefore = itemCount directory
 
-    let allEntries = Directory.EnumerateFileSystemEntries directory
+    let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete =
         match bytesToFree with
         | Some bytes ->
@@ -128,12 +126,12 @@ let clean (directory : string) (date : DateTime) (bytesToFree : int64 option) : 
 let main args =
     match CommandLineParser.parse args with
     | Some options ->
-        let directory = defaultArg options.Directory (Path.GetTempPath ())
+        let directory = defaultArg options.Directory (Directory.getTempPath().ToString())
         let period = defaultArg options.Period defaultPeriod
         let date = DateTime.UtcNow.AddDays (-(double period))
-        let result = clean directory date options.BytesToFree
+        let result = clean (Path.existing directory) date options.BytesToFree
 
-        info (sprintf "\nDirectory %s cleaned up" result.Directory)
+        info (sprintf "\nDirectory %s cleaned up" (result.Directory.ToString()))
         info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
 
         info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)

@@ -6,6 +6,7 @@
     <ItemGroup>
         <Compile Include="AssemblyInfo.fs" />
         <Compile Include="CommandLineParserTests.fs" />
+        <Compile Include="FileSystemTests.fs" />
         <Compile Include="Utils.fs" />
         <Compile Include="CleanTests.fs" />
         <Compile Include="NativeFunctionsTests.fs" />
