@@ -2,125 +2,127 @@ module Vacuum.FileSystem
 
 open System
 open System.IO
+open System.Text.RegularExpressions
 
 open Microsoft.VisualBasic.FileIO
 
 [<Struct>]
-type Path = private Path of string with
-    /// Creates a path to any file system item. For directories whose names ends with spaces, additional escaping will
-    /// be applied.
-    static member create(path: string, isDirectory: bool) =
-        // When passing a directory path to external APIs, we need to be extra careful about directories whose names are
-        // consisting only of spaces. To work with these directories, we'll need to add a terminating path separator,
-        // otherwise most APIs will just trim the trailing spaces and work with the parent directories.
-        let escaped =
-            match path.EndsWith " ", isDirectory with
-            | true, false -> raise <| Exception(sprintf "Unsupported file with trailing spaces: \"%s\"" path)
-            | true, true -> sprintf "%s%c" path Path.DirectorySeparatorChar
-            | false, _ -> path
-        Path escaped
+type AbsolutePath = private AbsolutePath of string with
+    static member UncPathPrefix = @"\\?\"
 
-    /// Creates a path to an existing file system item. It will check if the item is file or directory. For directories
-    /// whose names ends with spaces, additional escaping will be applied.
-    static member existing(path: string): Path =
-        let isDirectory = Directory.Exists(path + Path.DirectorySeparatorChar.ToString())
-        Path.create(path, isDirectory)
+    /// Checks that the path represents an absolute path. For local Windows paths, it checks that the path is a path
+    /// with disk letter and that it is rooted on that disk. Path.IsPathRooted won't work because it doesn't work for
+    /// disk-relative paths such as "C:Temp".
+    static member private assertAbsolute(AbsolutePath path) =
+        if not(path.Length > 2 && path.[1] = ':' && path.[2] = Path.DirectorySeparatorChar) then
+            failwithf "Path \"%s\" is not absolute" path
 
-    static member (/) (p1: Path, p2: string): Path =
-        let (Path p1) = p1
+    /// Creates a path from a string. All the characters in the string passed will be preserved (and it differs from the
+    /// way it works in the standard path-handling functions). Supports alternate path separators and UNC path prefix
+    /// (\\?\), but will normalize them (and add a prefix when necessary). Trims any trailing path separators.
+    static member create(path: string) =
+        let withoutUncPrefix =
+            if path.StartsWith(AbsolutePath.UncPathPrefix, StringComparison.Ordinal)
+            then path.Substring AbsolutePath.UncPathPrefix.Length
+            else path
+        let withNormalizedSeparators = withoutUncPrefix.Replace(Path.AltDirectorySeparatorChar,
+                                                    Path.DirectorySeparatorChar)
+        let withTrimmedSeparators = withNormalizedSeparators.TrimEnd Path.DirectorySeparatorChar
+        let withDeduplicatedSeparators = Regex.Replace(withTrimmedSeparators,
+                                                       sprintf "%s+" (Regex.Escape (string Path.DirectorySeparatorChar)),
+                                                       string Path.DirectorySeparatorChar,
+                                                       RegexOptions.CultureInvariant)
+
+        let result = AbsolutePath withDeduplicatedSeparators
+        AbsolutePath.assertAbsolute result
+        result
+
+    static member (/) (p1: AbsolutePath, p2: string): AbsolutePath =
+        let (AbsolutePath p1) = p1
         let resultPath = Path.Combine(p1, p2)
-        Path resultPath
+        AbsolutePath resultPath
 
-    static member (/) (p1: Path, p2: Path): Path =
-        let (Path p2) = p2
-        p1 / p2
+    /// Returns the path string optionally prefixed by the UNC path prefix (\\?\) if necessary.
+    ///
+    /// It may be necessary if the path ends with a space or a dot.
+    member this.EscapedPathString: string =
+        let (AbsolutePath p) = this
+        if p.EndsWith ' ' || p.EndsWith '.' then
+            sprintf @"\\?\%s" p
+        else
+            p
 
-    override this.ToString(): string =
-        let (Path p) = this
+    /// Allows to extract the raw string value from the path object. It represents the path with normalized separators
+    /// and trimmed UNC path prefix (\\?\).
+    member this.RawPathString: string =
+        let (AbsolutePath p) = this
         p
 
-    static member private removeTrailingSlashes(p: string) =
-        p.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-
     member this.FileName: string =
-        let (Path p) = this
-        // Path.GetFileName doesn't work with the trailing slashes, but, on the other hand, it works with the trailing
-        // spaces. Thus, remove the trailing slash from the path:
-        Path.GetFileName(Path.removeTrailingSlashes p)
+        let (AbsolutePath p) = this
+        Path.GetFileName p
 
-    member this.GetParent(): Path =
-        let (Path p) = this
-        // Directory.GetParent doesn't work with the trailing slashes, but, on the other hand, it works with the
-        // trailing spaces. Thus, remove the trailing slash from the path:
-        let currentPath = Path.removeTrailingSlashes p
-        let parentPath = Directory.GetParent(currentPath).ToString() // called instead of FullPath, because FullPath
-                                                                     // eats trailing spaces from the names
-        Path.create(parentPath, true)
-
-    member this.GetFullPath(): Path =
-        let (Path p) = this
-        Path(System.IO.Path.GetFullPath p)
-
-/// Allows to extract the string path value from the path object.
-let (|Path|) (p: Path) =
-    let (Path x) = p
-    x
+    member this.GetParent(): AbsolutePath =
+        let (AbsolutePath p) = this
+        let parentPath = Directory.GetParent(p).ToString() // called instead of FullPath, because FullPath eats trailing
+                                                           // spaces from the names
+        AbsolutePath parentPath
 
 module File =
-    let exists(Path p): bool =
-        File.Exists p
+    let exists(p: AbsolutePath): bool =
+        File.Exists p.EscapedPathString
 
-    let getCreationTimeUtc(Path p): DateTime =
-        File.GetCreationTimeUtc p
+    let getCreationTimeUtc(p: AbsolutePath): DateTime =
+        File.GetCreationTimeUtc p.EscapedPathString
 
-    let getLastAccessTimeUtc(Path p): DateTime =
-        File.GetLastAccessTimeUtc p
+    let getLastAccessTimeUtc(p: AbsolutePath): DateTime =
+        File.GetLastAccessTimeUtc p.EscapedPathString
 
-    let getLastWriteTimeUtc(Path p): DateTime =
-        File.GetLastWriteTimeUtc p
+    let getLastWriteTimeUtc(p: AbsolutePath): DateTime =
+        File.GetLastWriteTimeUtc p.EscapedPathString
 
-    let setCreationTimeUtc (Path p) (d: DateTime): unit =
-        File.SetCreationTimeUtc(p, d)
+    let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        File.SetCreationTimeUtc(p.EscapedPathString, d)
 
-    let setLastAccessTimeUtc(Path p) (d: DateTime): unit =
-        File.SetLastAccessTimeUtc(p, d)
+    let setLastAccessTimeUtc(p: AbsolutePath) (d: DateTime): unit =
+        File.SetLastAccessTimeUtc(p.EscapedPathString, d)
 
-    let setLastWriteTimeUtc(Path p) (d: DateTime): unit =
-        File.SetLastWriteTimeUtc(p, d)
+    let setLastWriteTimeUtc(p: AbsolutePath) (d: DateTime): unit =
+        File.SetLastWriteTimeUtc(p.EscapedPathString, d)
 
-    let create(Path p): FileStream =
-        File.Create p
+    let create(p: AbsolutePath): FileStream =
+        File.Create p.EscapedPathString
 
-    let recycle(Path p) =
-        FileSystem.DeleteFile(p, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
+    let recycle(p: AbsolutePath) =
+        FileSystem.DeleteFile(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 
 module Directory =
-    let enumerateFileSystemEntries(Path p): Path seq =
-        Directory.EnumerateFileSystemEntries p
-        |> Seq.map Path.existing
+    let enumerateFileSystemEntries(p: AbsolutePath): AbsolutePath seq =
+        Directory.EnumerateFileSystemEntries p.EscapedPathString
+        |> Seq.map AbsolutePath.create
 
-    let enumerateFileSystemEntriesRecursively(Path p): Path seq =
-        Directory.EnumerateFileSystemEntries(p, "*", SearchOption.AllDirectories)
-        |> Seq.map Path.existing
+    let enumerateFileSystemEntriesRecursively(p: AbsolutePath): AbsolutePath seq =
+        Directory.EnumerateFileSystemEntries(p.EscapedPathString, "*", SearchOption.AllDirectories)
+        |> Seq.map AbsolutePath.create
 
-    let setCreationTimeUtc (Path p) (d: DateTime): unit =
-        Directory.SetCreationTimeUtc(p, d)
+    let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        Directory.SetCreationTimeUtc(p.EscapedPathString, d)
 
-    let setLastAccessTimeUtc(Path p) (d: DateTime): unit =
-        Directory.SetLastAccessTimeUtc(p, d)
+    let setLastAccessTimeUtc(p: AbsolutePath) (d: DateTime): unit =
+        Directory.SetLastAccessTimeUtc(p.EscapedPathString, d)
 
-    let setLastWriteTimeUtc(Path p) (d: DateTime): unit =
-        Directory.SetLastWriteTimeUtc(p, d)
+    let setLastWriteTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        Directory.SetLastWriteTimeUtc(p.EscapedPathString, d)
 
-    let getTempPath() =
+    let getTempPath(): AbsolutePath =
         Path.GetTempPath()
-        |> Path.existing
+        |> AbsolutePath.create
 
-    let create(Path p): unit =
-        Directory.CreateDirectory p |> ignore
+    let create(p: AbsolutePath): unit =
+        Directory.CreateDirectory p.EscapedPathString |> ignore
 
-    let recycle(Path p) =
-        FileSystem.DeleteDirectory(p, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
+    let recycle(p: AbsolutePath): unit =
+        FileSystem.DeleteDirectory(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 
-    let deleteRecursive(Path p) =
-        Directory.Delete(p, true)
+    let deleteRecursive(p: AbsolutePath): unit =
+        Directory.Delete(p.EscapedPathString, true)

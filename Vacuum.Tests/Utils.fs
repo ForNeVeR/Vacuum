@@ -11,7 +11,7 @@ type FileInfo = {
 }
 
 type DisposableDirectory = {
-    Path: Path
+    Path: AbsolutePath
 }
     with
     member this.GetFiles () : string seq =
@@ -31,16 +31,16 @@ let private setFileDate =
 let private setDirectoryDate =
     setDate [| Directory.setCreationTimeUtc; Directory.setLastAccessTimeUtc; Directory.setLastWriteTimeUtc |]
 
-let private setTreeDates (root: Path) (child: Path) minDate =
-    let mutable current = child.GetFullPath()
-    while current <> root.GetFullPath() do
+let private setTreeDates (root: AbsolutePath) (child: AbsolutePath) minDate =
+    let mutable current = child
+    while current <> root do
         if File.exists current
         then setFileDate current minDate
         else setDirectoryDate current minDate
 
         current <- current.GetParent()
 
-let private createFile (rootLocation: Path) minDate (file: FileInfo) =
+let private createFile (rootLocation: AbsolutePath) minDate (file: FileInfo) =
     let path = rootLocation / file.Path
 
     let location = path.GetParent()

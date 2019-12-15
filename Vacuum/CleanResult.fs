@@ -7,7 +7,7 @@ open Vacuum.FileSystem
 type RemoveStatus = Ok | Error
 
 type CleanResult = {
-    Directory: Path
+    Directory: AbsolutePath
     CleanedDate: DateTime
     ItemsBefore: int
     ItemsAfter: int
