@@ -71,7 +71,7 @@ let rec private getEntrySize path =
         |> Seq.map getEntrySize
         |> Seq.sum
 
-let private takeBytes bytes (files: Path seq) =
+let private takeBytes bytes (files: AbsolutePath seq) =
     seq {
         let enumerator = files.GetEnumerator()
         try
@@ -84,7 +84,7 @@ let private takeBytes bytes (files: Path seq) =
             enumerator.Dispose()
     }
 
-let clean (directory: Path) (date: DateTime) (bytesToFree: int64 option): CleanResult =
+let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option): CleanResult =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
@@ -126,12 +126,12 @@ let clean (directory: Path) (date: DateTime) (bytesToFree: int64 option): CleanR
 let main args =
     match CommandLineParser.parse args with
     | Some options ->
-        let directory = defaultArg options.Directory (Directory.getTempPath().ToString())
+        let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
         let period = defaultArg options.Period defaultPeriod
         let date = DateTime.UtcNow.AddDays (-(double period))
-        let result = clean (Path.existing directory) date options.BytesToFree
+        let result = clean (AbsolutePath.create directory) date options.BytesToFree
 
-        info (sprintf "\nDirectory %s cleaned up" (result.Directory.ToString()))
+        info (sprintf "\nDirectory %s cleaned up" (result.Directory.RawPathString))
         info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
 
         info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
