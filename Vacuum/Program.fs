@@ -1,4 +1,4 @@
-﻿module Vacuum.Program
+module Vacuum.Program
 
 open System
 open System.Diagnostics
@@ -41,16 +41,16 @@ let private needToRemoveTopLevel date path =
     with
     | :? UnauthorizedAccessException -> false
     | ex ->
-        let message = sprintf "Error when scanning %s" (path.ToString())
+        let message = sprintf "Error when scanning %s" path.RawPathString
         raise <| Exception(message, ex)
 
 let private remove item =
     try
         if File.exists item then
-            printf "Removing file %s... " (item.ToString())
+            printf "Removing file %s... " item.RawPathString
             File.recycle item
         else
-            printf "Removing directory %s... " (item.ToString())
+            printf "Removing directory %s... " item.RawPathString
             Directory.recycle item
 
         ok ()
