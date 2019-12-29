@@ -1,7 +1,8 @@
-module Vacuum.Program
+﻿module Vacuum.Program
 
 open System
 open System.Diagnostics
+open System.Text
 
 open Vacuum.Commands
 open Vacuum.FileSystem
@@ -47,10 +48,10 @@ let private needToRemoveTopLevel date path =
 let private remove item =
     try
         if File.exists item then
-            printf "Removing file %s... " item.RawPathString
+            printf "Removing file %s… " item.RawPathString
             File.recycle item
         else
-            printf "Removing directory %s... " item.RawPathString
+            printf "Removing directory %s… " item.RawPathString
             Directory.recycle item
 
         ok ()
@@ -122,8 +123,13 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
       States = states
       TimeTaken = time }
 
+let initializeConsole() =
+    Console.OutputEncoding <- Encoding.UTF8
+
 [<EntryPoint>]
 let main args =
+    initializeConsole()
+
     match CommandLineParser.parse args with
     | Some options ->
         let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
