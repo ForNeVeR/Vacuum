@@ -21,6 +21,11 @@ Consult the embedded help system for the detailed parameter manual:
 
     Vacuum.exe --help
 
+Documentation
+-------------
+
+See [the changelog][changelog].
+
 Download
 --------
 
@@ -28,6 +33,7 @@ To download Vacuum binary distribution, please visit [GitHub releases
 section][releases].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
+[changelog]: ./CHANGELOG.md
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
