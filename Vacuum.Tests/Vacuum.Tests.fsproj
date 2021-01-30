@@ -4,7 +4,6 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="AssemblyInfo.fs" />
         <Compile Include="CommandLineParserTests.fs" />
         <Compile Include="Utils.fs" />
         <Compile Include="FileSystemTests.fs" />
