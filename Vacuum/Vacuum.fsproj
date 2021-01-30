@@ -14,6 +14,8 @@
         <Compile Include="CleanResult.fs" />
         <Compile Include="NativeFunctions.fs" />
         <Compile Include="Program.fs" />
-        <None Include="../*.md" CopyToPublishDirectory="Always" />
+        <None Include="../CHANGELOG.md" CopyToPublishDirectory="Always" />
+        <None Include="../LICENSE.md" CopyToPublishDirectory="Always" />
+        <None Include="../README.md" CopyToPublishDirectory="Always" />
     </ItemGroup>
 </Project>

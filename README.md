@@ -24,7 +24,8 @@ Consult the embedded help system for the detailed parameter manual:
 Documentation
 -------------
 
-See [the changelog][changelog].
+- [Changelog][changelog]
+- [Maintainership][maintainership]
 
 Download
 --------
@@ -34,6 +35,7 @@ section][releases].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [changelog]: ./CHANGELOG.md
+[maintainership]: ./MAINTAINERSHIP.md
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
