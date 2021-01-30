@@ -3,6 +3,14 @@ Vacuum [![Status Aquana][status-aquana]][andivionian-status-classifier]
 
 Windows temporary directory cleanup tool.
 
+Requirements
+------------
+
+To run the program, [.NET Core][dotnet] Runtime 3.0 or later should be available
+in the system.
+
+To develop the program, [.NET Core][dotnet] SDK 3.0 or later is required.
+
 Usage
 -----
 
@@ -35,6 +43,7 @@ section][releases].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [changelog]: ./CHANGELOG.md
+[dotnet]: https://dot.net/
 [maintainership]: ./MAINTAINERSHIP.md
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 
