@@ -16,6 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Vacuum.Tests", "Vacuum.Tests\Vacuum.Tests.fsproj", "{0DB311D7-6FB9-4388-A646-42ACEF2D9B24}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{CA13CDAB-5823-4EDB-AC88-570587A1F125}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{1FC25581-B0B7-413C-A66D-2921AE761064}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\main.yml = .github\workflows\main.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1FC25581-B0B7-413C-A66D-2921AE761064} = {CA13CDAB-5823-4EDB-AC88-570587A1F125}
 	EndGlobalSection
 EndGlobal
