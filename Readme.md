@@ -1,4 +1,4 @@
-Vacuum [![Status Aquana][status-aquana]][andivionian-status-classifier] [![Build status][build-status-appveyor]][appveyor]
+Vacuum [![Status Aquana][status-aquana]][andivionian-status-classifier]
 ======
 
 Windows temporary directory cleanup tool.
@@ -28,8 +28,6 @@ To download Vacuum binary distribution, please visit [GitHub releases
 section][releases].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
-[appveyor]: https://ci.appveyor.com/project/ForNeVeR/Vacuum/branch/develop
-
-[build-status-appveyor]: https://ci.appveyor.com/api/projects/status/9mogckfsaxpvmfef/branch/develop?svg=true
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
+
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
