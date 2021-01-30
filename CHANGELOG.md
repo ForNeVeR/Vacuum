@@ -29,25 +29,25 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - [#17: `PathTooLongException`](https://github.com/ForNeVeR/Vacuum/issues/17)
 
-## [0.5] - 2016-04-27
+## [0.5.0] - 2016-04-27
 ### Added
 - Flag to free a specified amount of space
 
-## [0.4] - 2016-04-03
+## [0.4.0] - 2016-04-03
 ### Removed
 - Possibility to set clean period in months
 
-## [0.3] - 2016-02-09
+## [0.3.0] - 2016-02-09
 ### Added
 - Embedded help
 - Flag to override cleaned directory
 - Flag to override period after which items are considered for cleanup
 
-## [0.2] - 2016-01-29
+## [0.2.0] - 2016-01-29
 ### Changed
 - Consider date of a directory itself, in addition to the contained files' dates
 
-## [0.1] - 2016-01-24
+## [0.1.0] - 2016-01-24
 ### Added
 - Statistics logging
 
@@ -56,13 +56,13 @@ This is the initial version of the program to delete old entries from the system
 temporary directory.
 
 [0.0.1]: https://github.com/ForNeVeR/Vacuum/releases/tag/0.0.1
-[0.1]: https://github.com/ForNeVeR/Vacuum/compare/0.0.1...0.1
-[0.2]: https://github.com/ForNeVeR/Vacuum/compare/0.1...0.2
-[0.3]: https://github.com/ForNeVeR/Vacuum/compare/0.2...0.3
-[0.4]: https://github.com/ForNeVeR/Vacuum/compare/0.3...0.4
-[0.5]: https://github.com/ForNeVeR/Vacuum/compare/0.4...0.5
+[0.1.0]: https://github.com/ForNeVeR/Vacuum/compare/0.0.1...0.1
+[0.2.0]: https://github.com/ForNeVeR/Vacuum/compare/0.1...0.2
+[0.3.0]: https://github.com/ForNeVeR/Vacuum/compare/0.2...0.3
+[0.4.0]: https://github.com/ForNeVeR/Vacuum/compare/0.3...0.4
+[0.5.0]: https://github.com/ForNeVeR/Vacuum/compare/0.4...0.5
 [0.5.1]: https://github.com/ForNeVeR/Vacuum/compare/0.5...0.5.1
 [1.0.0]: https://github.com/ForNeVeR/Vacuum/compare/0.5.1...1.0.0
 [1.0.1]: https://github.com/ForNeVeR/Vacuum/compare/1.0.0...1.0.1
-[1.1]: https://github.com/ForNeVeR/Vacuum/compare/1.0.1...v1.1
+[1.1.0]: https://github.com/ForNeVeR/Vacuum/compare/1.0.1...v1.1
 [Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.1...HEAD
