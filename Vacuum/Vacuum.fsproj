@@ -14,5 +14,6 @@
         <Compile Include="CleanResult.fs" />
         <Compile Include="NativeFunctions.fs" />
         <Compile Include="Program.fs" />
+        <None Include="../*.md" CopyToPublishDirectory="Always" />
     </ItemGroup>
 </Project>

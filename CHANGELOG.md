@@ -6,6 +6,9 @@ and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Documentation files are now included into the program distribution
+
 ### Fixed
 - Format for path logging
 - Broken Unicode characters in the output
