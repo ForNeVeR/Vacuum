@@ -10,7 +10,6 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
       - name: Read version from ref
         id: version
@@ -20,11 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: NuGet cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.NUGET_PACKAGES }}
-          key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
       - name: Set up .NET Core SDK
         uses: actions/setup-dotnet@v1
         with:
