@@ -34,6 +34,7 @@ Documentation
 
 - [Changelog][changelog]
 - [Maintainership][maintainership]
+- [License][license]
 
 Download
 --------
@@ -44,6 +45,7 @@ section][releases].
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [changelog]: ./CHANGELOG.md
 [dotnet]: https://dot.net/
+[license]: ./LICENSE.md
 [maintainership]: ./MAINTAINERSHIP.md
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 

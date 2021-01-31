@@ -64,5 +64,5 @@ temporary directory.
 [0.5.1]: https://github.com/ForNeVeR/Vacuum/compare/0.5...0.5.1
 [1.0.0]: https://github.com/ForNeVeR/Vacuum/compare/0.5.1...1.0.0
 [1.0.1]: https://github.com/ForNeVeR/Vacuum/compare/1.0.0...1.0.1
-[1.1.0]: https://github.com/ForNeVeR/Vacuum/compare/1.0.1...v1.1
+[1.1.0]: https://github.com/ForNeVeR/Vacuum/compare/1.0.1...v1.1.0
 [Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.1...HEAD
