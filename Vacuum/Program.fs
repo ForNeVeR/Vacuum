@@ -89,7 +89,7 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
-    info (sprintf "Cleaning directory %s"  (directory.ToString()))
+    info(sprintf "Cleaning directory %s" directory.RawPathString)
     if bytesToFree.IsSome then
         info (sprintf "Cleaning %d bytes" bytesToFree.Value)
 
