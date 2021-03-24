@@ -6,6 +6,9 @@ and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
 ## [1.1.1] - 2021-03-24
+### Changed
+- Project migrated to .NET 5.0
+
 ### Fixed
 - [#44: Vacuum fails completely after failing to enumerate certain
   path](https://github.com/ForNeVeR/Vacuum/issues/44)
