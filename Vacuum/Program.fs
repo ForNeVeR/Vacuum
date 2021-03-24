@@ -42,8 +42,8 @@ let private needToRemoveTopLevel date path =
     with
     | :? UnauthorizedAccessException -> false
     | ex ->
-        let message = sprintf "Error when scanning %s" path.RawPathString
-        raise <| Exception(message, ex)
+        error $"Error when scanning %s{path.RawPathString}: %s{ex.Message}"
+        false
 
 let private remove item =
     try
