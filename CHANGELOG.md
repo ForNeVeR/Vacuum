@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
-Versioning](https://semver.org/spec/v2.0.0.html).
+Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
+
+## [1.1.1] - 2021-03-24
+### Fixed
+- [#44: Vacuum fails completely after failing to enumerate certain
+  path](https://github.com/ForNeVeR/Vacuum/issues/44)
 
 ## [1.1.0] - 2021-01-30
 ### Added
@@ -65,4 +70,5 @@ temporary directory.
 [1.0.0]: https://github.com/ForNeVeR/Vacuum/compare/0.5.1...1.0.0
 [1.0.1]: https://github.com/ForNeVeR/Vacuum/compare/1.0.0...1.0.1
 [1.1.0]: https://github.com/ForNeVeR/Vacuum/compare/1.0.1...v1.1.0
-[Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.1...HEAD
+[1.1.1]: https://github.com/ForNeVeR/Vacuum/compare/v1.1.0...v1.1.1
+[Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.1.1...HEAD
