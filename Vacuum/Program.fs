@@ -48,10 +48,10 @@ let private needToRemoveTopLevel date path =
 let private remove item =
     try
         if File.exists item then
-            printf "Removing file %s… " item.RawPathString
+            printf $"Removing file %s{item.RawPathString}… "
             File.recycle item
         else
-            printf "Removing directory %s… " item.RawPathString
+            printf $"Removing directory %s{item.RawPathString}… "
             Directory.recycle item
 
         ok ()
@@ -59,10 +59,10 @@ let private remove item =
         Ok
     with
     | ex ->
-        error (ex.Message)
+        error ex.Message
         Console.Error.WriteLine (ex.ToString ())
 
-        Vacuum.Error
+        Error
 
 let rec private getEntrySize path =
     if File.exists path then
@@ -89,9 +89,9 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
-    info(sprintf "Cleaning directory %s" directory.RawPathString)
+    info $"Cleaning directory %s{directory.RawPathString}"
     if bytesToFree.IsSome then
-        info (sprintf "Cleaning %d bytes" bytesToFree.Value)
+        info $"Cleaning %d{bytesToFree.Value} bytes"
 
     let itemsBefore = itemCount directory
 
@@ -137,20 +137,20 @@ let main args =
         let date = DateTime.UtcNow.AddDays (-(double period))
         let result = clean (AbsolutePath.create directory) date options.BytesToFree
 
-        info (sprintf "\nDirectory %s cleaned up" (result.Directory.RawPathString))
+        info $"\nDirectory %s{result.Directory.RawPathString} cleaned up"
         info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
 
-        info (sprintf "\n  Items before cleanup: %d" result.ItemsBefore)
-        info (sprintf "  Items after cleanup: %d" result.ItemsAfter)
+        info $"\n  Items before cleanup: %d{result.ItemsBefore}"
+        info $"  Items after cleanup: %d{result.ItemsAfter}"
 
         let getResult r = defaultArg (Map.tryFind r result.States) 0
         let successes = getResult Ok
-        let errors = getResult Vacuum.Error
+        let errors = getResult Error
 
-        printColor ConsoleColor.Green (sprintf "\n  Finished ok: %d" successes)
-        printColor ConsoleColor.Red (sprintf "  Finished with error: %d" errors)
+        printColor ConsoleColor.Green $"\n  Finished ok: %d{successes}"
+        printColor ConsoleColor.Red $"  Finished with error: %d{errors}"
 
-        info (sprintf "\n  Total time taken: %A" result.TimeTaken)
+        info $"\n  Total time taken: %A{result.TimeTaken}"
 
         0
     | None -> 1
