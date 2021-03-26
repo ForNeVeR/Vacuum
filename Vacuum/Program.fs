@@ -30,20 +30,22 @@ let private getLastFileAccessDate path =
 let private lastTouchedEarlierThan date path =
     getLastFileAccessDate path < date
 
-let private needToRemoveTopLevel date path =
+let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError: bool |} =
     try
-        if File.exists path then
-            lastTouchedEarlierThan date path
-        else
-            [| Seq.singleton path
-               Directory.enumerateFileSystemEntriesRecursively path |]
-            |> Seq.concat
-            |> Seq.forall (lastTouchedEarlierThan date)
+        let needToRemove =
+            if File.exists path then
+                lastTouchedEarlierThan date path
+            else
+                [| Seq.singleton path
+                   Directory.enumerateFileSystemEntriesRecursively path |]
+                |> Seq.concat
+                |> Seq.forall (lastTouchedEarlierThan date)
+        {| NeedToRemove = needToRemove; HasScanError = false |}
     with
-    | :? UnauthorizedAccessException -> false
+    | :? UnauthorizedAccessException -> {| NeedToRemove = false; HasScanError = false |}
     | ex ->
         error $"Error when scanning %s{path.RawPathString}: %s{ex.Message}"
-        false
+        {| NeedToRemove = false; HasScanError = true |}
 
 let private remove item =
     try
@@ -96,15 +98,20 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
     let itemsBefore = itemCount directory
 
     let allEntries = Directory.enumerateFileSystemEntries directory
-    let filesToDelete =
+    let filesToDelete, scanErrorCount =
         match bytesToFree with
         | Some bytes ->
             allEntries
             |> Seq.sortBy getLastFileAccessDate
-            |> takeBytes bytes
+            |> takeBytes bytes, 0
         | None ->
-            allEntries
-            |> Seq.filter (needToRemoveTopLevel date)
+            let files = ResizeArray()
+            let mutable errorCount = 0
+            for entry in allEntries do
+                let scanResult = needToRemoveTopLevel date entry
+                if scanResult.NeedToRemove then files.Add entry
+                if scanResult.HasScanError then errorCount <- errorCount + 1
+            upcast files, errorCount
 
     let states =
         filesToDelete
@@ -112,6 +119,7 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
         |> Seq.groupBy id
         |> Seq.map (fun (key, s) -> key, Seq.length s)
         |> Map.ofSeq
+        |> Map.add ScanError scanErrorCount
 
     let itemsAfter = itemCount directory
     let time = stopwatch.Elapsed
@@ -146,9 +154,12 @@ let main args =
         let getResult r = defaultArg (Map.tryFind r result.States) 0
         let successes = getResult Ok
         let errors = getResult Error
+        let scanErrors = getResult ScanError
 
-        printColor ConsoleColor.Green $"\n  Finished ok: %d{successes}"
-        printColor ConsoleColor.Red $"  Finished with error: %d{errors}"
+        printColor ConsoleColor.Green $"\n  Successfully deleted: %d{successes}"
+        printColor ConsoleColor.Red $"  Cannot delete: %d{errors}"
+        if scanErrors > 0 then
+            printColor ConsoleColor.Red $"  Scan errors: %d{scanErrors}"
 
         info $"\n  Total time taken: %A{result.TimeTaken}"
 

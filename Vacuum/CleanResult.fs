@@ -4,13 +4,13 @@ open System
 
 open Vacuum.FileSystem
 
-type RemoveStatus = Ok | Error
+type ProcessingStatus = Ok | Error | ScanError
 
 type CleanResult = {
     Directory: AbsolutePath
     CleanedDate: DateTime
     ItemsBefore: int
     ItemsAfter: int
-    States: Map<RemoveStatus, int>
+    States: Map<ProcessingStatus, int>
     TimeTaken: TimeSpan
 }

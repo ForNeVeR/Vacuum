@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Scan error count in the output
+
 ## [1.1.1] - 2021-03-24
 ### Changed
 - Project migrated to .NET 5.0
