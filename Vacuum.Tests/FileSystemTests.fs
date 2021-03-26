@@ -6,7 +6,7 @@ open Xunit
 
 open Vacuum
 open Vacuum.FileSystem
-open Vacuum.Tests.Utils
+open Vacuum.Tests.Framework.FileSystemUtils
 
 [<Fact>]
 let ``AbsolutePath.create removes UNC prefix``(): unit =

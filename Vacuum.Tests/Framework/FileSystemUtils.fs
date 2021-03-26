@@ -1,4 +1,4 @@
-﻿module Vacuum.Tests.Utils
+﻿module Vacuum.Tests.Framework.FileSystemUtils
 
 open System
 

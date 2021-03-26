@@ -5,7 +5,7 @@ open System
 open Xunit
 
 open Vacuum
-open Vacuum.Tests.Utils
+open Vacuum.Tests.Framework.FileSystemUtils
 
 [<Fact>]
 let ``GetCompressedFileSize should return meaningful value for small file`` () =
