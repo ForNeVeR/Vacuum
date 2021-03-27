@@ -4,7 +4,6 @@ open System
 open System.IO
 
 open Microsoft.VisualBasic.FileIO
-open NCode.ReparsePoints
 
 module File =
     let exists(p: AbsolutePath): bool =
@@ -35,13 +34,9 @@ module File =
         FileSystem.DeleteFile(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 
 module ReparsePoint =
-    let provider = ReparsePointFactory.Provider
     let exists(path: AbsolutePath): bool =
         Directory.Exists(path.EscapedPathString)
         && File.GetAttributes(path.EscapedPathString).HasFlag(FileAttributes.ReparsePoint)
-
-    let createJunction (path: AbsolutePath) (target: AbsolutePath): unit =
-        provider.CreateLink(path.EscapedPathString, target.EscapedPathString, LinkType.Junction)
 
     let delete(path: AbsolutePath): unit =
         Directory.Delete(path.EscapedPathString)

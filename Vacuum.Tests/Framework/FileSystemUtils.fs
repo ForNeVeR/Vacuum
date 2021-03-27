@@ -2,6 +2,8 @@
 
 open System
 
+open NCode.ReparsePoints
+
 open Vacuum
 open Vacuum.FileSystem
 
@@ -59,7 +61,11 @@ let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEn
         let junctionPath = rootLocation / entry.Path
         let targetPath = rootLocation / entry.TargetPath
 
-        ReparsePoint.createJunction junctionPath targetPath
+        ReparsePointFactory.Provider.CreateLink(
+            junctionPath.EscapedPathString,
+            targetPath.EscapedPathString,
+            LinkType.Junction
+        )
 
         setJunctionDate junctionPath minDate
 

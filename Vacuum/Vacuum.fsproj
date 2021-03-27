@@ -8,7 +8,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CommandLineParser.FSharp" Version="2.6.0" />
-        <PackageReference Include="NCode.ReparsePoints" Version="1.0.2" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Commands.fs" />
