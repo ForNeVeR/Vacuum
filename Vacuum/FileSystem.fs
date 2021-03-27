@@ -2,71 +2,9 @@ module Vacuum.FileSystem
 
 open System
 open System.IO
-open System.Text.RegularExpressions
 
 open Microsoft.VisualBasic.FileIO
-
-[<Struct>]
-type AbsolutePath = private AbsolutePath of string with
-    static member UncPathPrefix = @"\\?\"
-
-    /// Checks that the path represents an absolute path. For local Windows paths, it checks that the path is a path
-    /// with disk letter and that it is rooted on that disk. Path.IsPathRooted won't work because it doesn't work for
-    /// disk-relative paths such as "C:Temp".
-    static member private assertAbsolute(AbsolutePath path) =
-        if not(path.Length > 2 && path.[1] = ':' && path.[2] = Path.DirectorySeparatorChar) then
-            failwithf "Path \"%s\" is not absolute" path
-
-    /// Creates a path from a string. All the characters in the string passed will be preserved (and it differs from the
-    /// way it works in the standard path-handling functions). Supports alternate path separators and UNC path prefix
-    /// (\\?\), but will normalize them (and add a prefix when necessary). Trims any trailing path separators.
-    static member create(path: string) =
-        let withoutUncPrefix =
-            if path.StartsWith(AbsolutePath.UncPathPrefix, StringComparison.Ordinal)
-            then path.Substring AbsolutePath.UncPathPrefix.Length
-            else path
-        let withNormalizedSeparators = withoutUncPrefix.Replace(Path.AltDirectorySeparatorChar,
-                                                    Path.DirectorySeparatorChar)
-        let withTrimmedSeparators = withNormalizedSeparators.TrimEnd Path.DirectorySeparatorChar
-        let withDeduplicatedSeparators = Regex.Replace(withTrimmedSeparators,
-                                                       sprintf "%s+" (Regex.Escape (string Path.DirectorySeparatorChar)),
-                                                       string Path.DirectorySeparatorChar,
-                                                       RegexOptions.CultureInvariant)
-
-        let result = AbsolutePath withDeduplicatedSeparators
-        AbsolutePath.assertAbsolute result
-        result
-
-    static member (/) (p1: AbsolutePath, p2: string): AbsolutePath =
-        let (AbsolutePath p1) = p1
-        let resultPath = Path.Combine(p1, p2)
-        AbsolutePath resultPath
-
-    /// Returns the path string optionally prefixed by the UNC path prefix (\\?\) if necessary.
-    ///
-    /// It may be necessary if the path ends with a space or a dot.
-    member this.EscapedPathString: string =
-        let (AbsolutePath p) = this
-        if p.EndsWith ' ' || p.EndsWith '.' then
-            sprintf @"\\?\%s" p
-        else
-            p
-
-    /// Allows to extract the raw string value from the path object. It represents the path with normalized separators
-    /// and trimmed UNC path prefix (\\?\).
-    member this.RawPathString: string =
-        let (AbsolutePath p) = this
-        p
-
-    member this.FileName: string =
-        let (AbsolutePath p) = this
-        Path.GetFileName p
-
-    member this.GetParent(): AbsolutePath =
-        let (AbsolutePath p) = this
-        let parentPath = Directory.GetParent(p).ToString() // called instead of FullPath, because FullPath eats trailing
-                                                           // spaces from the names
-        AbsolutePath parentPath
+open NCode.ReparsePoints
 
 module File =
     let exists(p: AbsolutePath): bool =
@@ -96,14 +34,47 @@ module File =
     let recycle(p: AbsolutePath) =
         FileSystem.DeleteFile(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 
+module ReparsePoint =
+    let provider = ReparsePointFactory.Provider
+    let exists(path: AbsolutePath): bool =
+        Directory.Exists(path.EscapedPathString)
+        && File.GetAttributes(path.EscapedPathString).HasFlag(FileAttributes.ReparsePoint)
+
+    let createJunction (path: AbsolutePath) (target: AbsolutePath): unit =
+        provider.CreateLink(path.EscapedPathString, target.EscapedPathString, LinkType.Junction)
+
+    let delete(path: AbsolutePath): unit =
+        Directory.Delete(path.EscapedPathString)
+
+    let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        NativeFunctions.setFileCreationTimeUtc p d
+
+    let setLastAccessTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        NativeFunctions.setLastAccessTimeUtc p d
+
+    let setLastWriteTimeUtc (p: AbsolutePath) (d: DateTime): unit =
+        NativeFunctions.setLastWriteTimeUtc p d
+
+    let recycle(p: AbsolutePath): unit =
+        FileSystem.DeleteDirectory(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
+
 module Directory =
     let enumerateFileSystemEntries(p: AbsolutePath): AbsolutePath seq =
+        if ReparsePoint.exists p then failwith $"Should not enumerate reparse point contents: \"%s{p.RawPathString}\""
         Directory.EnumerateFileSystemEntries p.EscapedPathString
         |> Seq.map AbsolutePath.create
 
-    let enumerateFileSystemEntriesRecursively(p: AbsolutePath): AbsolutePath seq =
-        Directory.EnumerateFileSystemEntries(p.EscapedPathString, "*", SearchOption.AllDirectories)
-        |> Seq.map AbsolutePath.create
+    let rec enumerateFileSystemEntriesRecursively(rootPath: AbsolutePath): AbsolutePath seq =
+        if ReparsePoint.exists rootPath then
+            failwith $"Should not enumerate reparse point contents: \"%s{rootPath.RawPathString}\""
+
+        seq {
+            let mutable currentPath = rootPath
+            for entry in enumerateFileSystemEntries currentPath do
+                yield entry
+                if not(ReparsePoint.exists entry) && Directory.Exists(entry.EscapedPathString) then
+                    yield! enumerateFileSystemEntriesRecursively entry
+        }
 
     let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         Directory.SetCreationTimeUtc(p.EscapedPathString, d)
@@ -124,5 +95,11 @@ module Directory =
     let recycle(p: AbsolutePath): unit =
         FileSystem.DeleteDirectory(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 
-    let deleteRecursive(p: AbsolutePath): unit =
-        Directory.Delete(p.EscapedPathString, true)
+    let rec deleteRecursive(rootToDelete: AbsolutePath): unit =
+        for entry in enumerateFileSystemEntries rootToDelete do
+            if ReparsePoint.exists entry then ReparsePoint.delete entry
+            else if Directory.Exists(entry.EscapedPathString) then deleteRecursive entry
+            else if File.exists entry then File.Delete entry.EscapedPathString
+            else failwith $"File not found: \"%s{entry.RawPathString}\""
+        Directory.Delete(rootToDelete.EscapedPathString)
+

@@ -2,8 +2,6 @@
 
 open System
 
-open Vacuum.FileSystem
-
 type ProcessingStatus = Ok | Error | ScanError
 
 type CleanResult = {

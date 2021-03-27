@@ -2,12 +2,17 @@
 
 open System
 
+open Vacuum
 open Vacuum.FileSystem
 
-type FileInfo = {
-    Path: string
+type FileSystemEntry =
+    | File of {| Path: string; Size: int64 |}
+    | Directory of {| Path: string |}
+    | Junction of {| Path: string; TargetPath: string |}
+
+type FileSystemEntryInfo = {
+    Entry: FileSystemEntry
     Date: DateTime
-    Size: int64
 }
 
 type DisposableDirectory = {
@@ -31,40 +36,46 @@ let private setFileDate =
 let private setDirectoryDate =
     setDate [| Directory.setCreationTimeUtc; Directory.setLastAccessTimeUtc; Directory.setLastWriteTimeUtc |]
 
-let private setTreeDates (root: AbsolutePath) (child: AbsolutePath) minDate =
-    let mutable current = child
-    while current <> root do
-        if File.exists current
-        then setFileDate current minDate
-        else setDirectoryDate current minDate
+let private setJunctionDate =
+    setDate [| ReparsePoint.setCreationTimeUtc; ReparsePoint.setLastAccessTimeUtc; ReparsePoint.setLastWriteTimeUtc |]
 
-        current <- current.GetParent()
+let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEntryInfo) =
+    match file.Entry with
+    | File entry ->
+        let path = rootLocation / entry.Path
 
-let private createFile (rootLocation: AbsolutePath) minDate (file: FileInfo) =
-    let path = rootLocation / file.Path
+        let location = path.GetParent()
+        Directory.create location
 
-    let location = path.GetParent()
-    Directory.create location
+        do
+            use stream = File.create path
+            stream.SetLength entry.Size
+        setFileDate path file.Date
+    | Directory entry ->
+        let path = rootLocation / entry.Path
+        Directory.create path
+        setDirectoryDate path minDate
+    | Junction entry ->
+        let junctionPath = rootLocation / entry.Path
+        let targetPath = rootLocation / entry.TargetPath
 
-    do
-        use stream = File.create path
-        stream.SetLength file.Size
-    setFileDate path file.Date
-    setTreeDates rootLocation location minDate
+        ReparsePoint.createJunction junctionPath targetPath
 
-let prepareEnvironment (infos : FileInfo seq) : DisposableDirectory =
+        setJunctionDate junctionPath minDate
+
+let prepareEnvironment (infos : FileSystemEntryInfo seq) : DisposableDirectory =
     let infos' = Seq.cache infos
-    let minDate =
-        infos
-        |> Seq.map (fun s -> s.Date)
-        |> Seq.min
 
     let name = string <| Guid.NewGuid ()
     let path = Directory.getTempPath() / name
 
     Directory.create path
-    setDirectoryDate path minDate
-
-    infos' |> Seq.iter (createFile path minDate)
+    if (not (Seq.isEmpty infos')) then
+        let minDate =
+            infos'
+            |> Seq.map (fun s -> s.Date)
+            |> Seq.min
+        setDirectoryDate path minDate
+        infos' |> Seq.iter(createEntry path minDate)
 
     { Path = path }

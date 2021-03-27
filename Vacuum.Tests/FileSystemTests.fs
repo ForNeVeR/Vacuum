@@ -6,6 +6,7 @@ open Xunit
 
 open Vacuum
 open Vacuum.FileSystem
+open Vacuum.Tests.Framework
 open Vacuum.Tests.Framework.FileSystemUtils
 
 [<Fact>]
@@ -70,10 +71,37 @@ let ``AbsolutePath resolve should preserve the trailing spaces``(): unit =
     Assert.Equal(@"C:\Temp\spaces ", derivedPath.RawPathString)
 
 [<Fact>]
+let ``ReparsePoint should not detect a directory``(): unit =
+    use dir = prepareEnvironment [| |]
+    let exists = ReparsePoint.exists dir.Path
+    Assert.False exists
+
+[<Fact>]
+let ``ReparsePoint should detect a true reparse point``(): unit =
+    use dir = prepareEnvironment [|
+        Temp.CreateDirectory "directory"
+        Temp.CreateJunction("junction", "directory")
+    |]
+    let exists = ReparsePoint.exists(dir.Path / "junction")
+    Assert.True exists
+
+[<Fact>]
 let ``enumerateFileSystemEntriesRecursively deals with spaces``(): unit =
     use dir = prepareEnvironment [|
-        { Path = "path with space /file.txt"; Date = DateTime(2010, 1, 1); Size = 1024L }
+        Temp.CreateFile("path with space /file.txt", DateTime(2010, 1, 1), 1024L)
     |]
     let directory = dir.Path / "path with space "
+    let items = FileSystem.Directory.enumerateFileSystemEntriesRecursively directory
+    Assert.Equal<AbsolutePath>(Seq.singleton(directory / "file.txt"), items)
+
+[<Fact>]
+let ``deleteRecursively doesn't delete junction contents``(): unit =
+    use testRoot = prepareEnvironment [|
+        Temp.CreateFile "directory/file.txt"
+        Temp.CreateJunction("junctionContainer/junction", "directory")
+    |]
+    let junctionContainer = testRoot.Path / "junctionContainer"
+    Directory.deleteRecursive junctionContainer
+    let directory = testRoot.Path / "directory"
     let items = FileSystem.Directory.enumerateFileSystemEntriesRecursively directory
     Assert.Equal<AbsolutePath>(Seq.singleton(directory / "file.txt"), items)

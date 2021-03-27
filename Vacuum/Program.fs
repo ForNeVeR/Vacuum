@@ -35,6 +35,8 @@ let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError:
         let needToRemove =
             if File.exists path then
                 lastTouchedEarlierThan date path
+            else if ReparsePoint.exists path then
+                lastTouchedEarlierThan date path
             else
                 [| Seq.singleton path
                    Directory.enumerateFileSystemEntriesRecursively path |]
@@ -49,7 +51,10 @@ let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError:
 
 let private remove item =
     try
-        if File.exists item then
+        if ReparsePoint.exists item then
+            printf $"Removing reparse point %s{item.RawPathString}… "
+            ReparsePoint.recycle item
+        else if File.exists item then
             printf $"Removing file %s{item.RawPathString}… "
             File.recycle item
         else

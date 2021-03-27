@@ -5,6 +5,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="Framework\FileSystemUtils.fs" />
+        <Compile Include="Framework\Temp.fs" />
         <Compile Include="CommandLineParserTests.fs" />
         <Compile Include="FileSystemTests.fs" />
         <Compile Include="CleanTests.fs" />

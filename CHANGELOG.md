@@ -8,6 +8,7 @@ Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Added
 - Scan error count in the output
+- Reparse point support
 
 ## [1.1.1] - 2021-03-24
 ### Changed

@@ -8,13 +8,15 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CommandLineParser.FSharp" Version="2.6.0" />
+        <PackageReference Include="NCode.ReparsePoints" Version="1.0.2" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Commands.fs" />
         <Compile Include="CommandLineParser.fs" />
+        <Compile Include="AbsolutePath.fs" />
+        <Compile Include="NativeFunctions.fs" />
         <Compile Include="FileSystem.fs" />
         <Compile Include="CleanResult.fs" />
-        <Compile Include="NativeFunctions.fs" />
         <Compile Include="Program.fs" />
         <None Include="../CHANGELOG.md" CopyToPublishDirectory="Always" />
         <None Include="../LICENSE.md" CopyToPublishDirectory="Always" />
