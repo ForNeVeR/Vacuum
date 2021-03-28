@@ -34,7 +34,7 @@ Documentation
 
 - [Changelog][changelog]
 - [Maintainership][maintainership]
-- [License][license]
+- [License (MIT)][license]
 
 Download
 --------
