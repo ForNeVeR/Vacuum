@@ -24,9 +24,22 @@ dates when examining the files (as they're reported by the filesystem):
 - creation date
 - last write date
 
+Main command-line arguments:
+
+- `(-d|--directory) <path>`: path to the temporary directory which should be
+  cleaned up. Falls back to [`Path.GetTempPath`][path.get-temp-path] by default
+  (which uses certain environment variables to determine the path).
+- `(-p|--period) <number>`: number of days for entry to be untouched before
+  being deleted by Vacuum. 30 by default.
+- `(-s|--space) (<number>|<number>k|<number>m)` amount of space to clean up (`k`
+  = kibibytes, m = mebibytes). In space-cleaning mode, Vacuum will still clean
+  up the oldest items first.
+
 Consult the embedded help system for the detailed parameter manual:
 
-    Vacuum.exe --help
+```console
+$ Vacuum.exe --help
+```
 
 Documentation
 -------------
@@ -46,6 +59,7 @@ section][releases].
 [dotnet]: https://dot.net/
 [license]: ./LICENSE.md
 [maintainership]: ./MAINTAINERSHIP.md
+[path.get-temp-path]: https://docs.microsoft.com/en-us/dotnet/api/system.io.path.gettemppath?view=net-5.0&tabs=windows
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg

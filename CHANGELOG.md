@@ -9,6 +9,9 @@ Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 ### Changed
 - Ignore last access dates when determining whether to delete an entry
 
+### Added
+- Usage documentation
+
 ## [1.2.0] - 2021-03-27
 ### Added
 - Scan error count in the output

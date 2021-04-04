@@ -16,7 +16,7 @@ type Clean =
 
       [<Option('s',
                "space",
-               HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k and m postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes")>]
+               HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k and m postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes.")>]
       Space : string option }
 
     member this.BytesToFree =
