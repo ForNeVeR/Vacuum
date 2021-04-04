@@ -71,3 +71,11 @@ let ``Cleaner should recycle junctions``(): unit =
 
     Assert.NotEmpty(Directory.enumerateFileSystemEntries(testDataRoot.Path / "directory"))
     Assert.False(File.exists(testDataRoot.Path / "junction"))
+
+[<Fact>]
+let ``Cleaner should clean empty directories``(): unit =
+    use testDataRoot = prepareEnvironment [|
+        Temp.CreateDirectory("mydir", DateTime(2010, 1, 1))
+    |]
+    let stats = Program.clean testDataRoot.Path (DateTime(2011, 1, 1)) None
+    Assert.Equal(1, stats.States.[Ok])
