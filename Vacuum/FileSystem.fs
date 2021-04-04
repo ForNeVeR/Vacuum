@@ -12,17 +12,11 @@ module File =
     let getCreationTimeUtc(p: AbsolutePath): DateTime =
         File.GetCreationTimeUtc p.EscapedPathString
 
-    let getLastAccessTimeUtc(p: AbsolutePath): DateTime =
-        File.GetLastAccessTimeUtc p.EscapedPathString
-
     let getLastWriteTimeUtc(p: AbsolutePath): DateTime =
         File.GetLastWriteTimeUtc p.EscapedPathString
 
     let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         File.SetCreationTimeUtc(p.EscapedPathString, d)
-
-    let setLastAccessTimeUtc(p: AbsolutePath) (d: DateTime): unit =
-        File.SetLastAccessTimeUtc(p.EscapedPathString, d)
 
     let setLastWriteTimeUtc(p: AbsolutePath) (d: DateTime): unit =
         File.SetLastWriteTimeUtc(p.EscapedPathString, d)
@@ -43,9 +37,6 @@ module ReparsePoint =
 
     let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         NativeFunctions.setFileCreationTimeUtc p d
-
-    let setLastAccessTimeUtc (p: AbsolutePath) (d: DateTime): unit =
-        NativeFunctions.setLastAccessTimeUtc p d
 
     let setLastWriteTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         NativeFunctions.setLastWriteTimeUtc p d
@@ -73,9 +64,6 @@ module Directory =
 
     let setCreationTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         Directory.SetCreationTimeUtc(p.EscapedPathString, d)
-
-    let setLastAccessTimeUtc(p: AbsolutePath) (d: DateTime): unit =
-        Directory.SetLastAccessTimeUtc(p.EscapedPathString, d)
 
     let setLastWriteTimeUtc (p: AbsolutePath) (d: DateTime): unit =
         Directory.SetLastWriteTimeUtc(p.EscapedPathString, d)

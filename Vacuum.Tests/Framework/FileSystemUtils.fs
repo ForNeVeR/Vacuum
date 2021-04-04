@@ -33,13 +33,13 @@ let private setDate setters path date =
     |> Seq.iter(fun setter -> setter path date)
 
 let private setFileDate =
-    setDate [| File.setCreationTimeUtc; File.setLastAccessTimeUtc; File.setLastWriteTimeUtc |]
+    setDate [| File.setCreationTimeUtc; File.setLastWriteTimeUtc |]
 
 let private setDirectoryDate =
-    setDate [| Directory.setCreationTimeUtc; Directory.setLastAccessTimeUtc; Directory.setLastWriteTimeUtc |]
+    setDate [| Directory.setCreationTimeUtc; Directory.setLastWriteTimeUtc |]
 
 let private setJunctionDate =
-    setDate [| ReparsePoint.setCreationTimeUtc; ReparsePoint.setLastAccessTimeUtc; ReparsePoint.setLastWriteTimeUtc |]
+    setDate [| ReparsePoint.setCreationTimeUtc; ReparsePoint.setLastWriteTimeUtc |]
 
 let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEntryInfo) =
     match file.Entry with

@@ -23,7 +23,7 @@ let private itemCount =
     Directory.enumerateFileSystemEntries >> Seq.length
 
 let private getLastFileAccessDate path =
-    [| File.getCreationTimeUtc; File.getLastAccessTimeUtc; File.getLastWriteTimeUtc |]
+    [| File.getCreationTimeUtc; File.getLastWriteTimeUtc |]
     |> Array.map (fun x -> x path)
     |> Array.max
 

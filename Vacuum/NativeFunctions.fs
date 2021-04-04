@@ -87,15 +87,6 @@ let setFileCreationTimeUtc(path: AbsolutePath) (time: DateTime): unit =
         then throwLastWin32Error()
     )
 
-let setLastAccessTimeUtc(path: AbsolutePath) (time: DateTime): unit =
-    setFileTime path (fun data handle ->
-        let mutable data = data
-        let mutable lastAccessTimeLong = time.ToFileTimeUtc()
-        let lastAccessTime = &Unsafe.As<int64, Kernel32.FILETIME>(&lastAccessTimeLong)
-        if Kernel32.SetFileTime(handle, &data.ftCreationTime, &lastAccessTime, &data.ftLastWriteTime)
-        then throwLastWin32Error()
-    )
-
 let setLastWriteTimeUtc(path: AbsolutePath) (time: DateTime): unit =
     setFileTime path (fun data handle ->
         let mutable data = data

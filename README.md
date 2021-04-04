@@ -23,7 +23,6 @@ dates when examining the files (as they're reported by the filesystem):
 
 - creation date
 - last write date
-- last access date
 
 Consult the embedded help system for the detailed parameter manual:
 
