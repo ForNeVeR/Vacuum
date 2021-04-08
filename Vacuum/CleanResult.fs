@@ -2,7 +2,7 @@
 
 open System
 
-type ProcessingStatus = Ok | Error | ScanError
+type ProcessingStatus = Recycled | ForceDeleted | Error | ScanError
 
 type CleanResult = {
     Directory: AbsolutePath

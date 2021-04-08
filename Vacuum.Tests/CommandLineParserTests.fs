@@ -26,3 +26,8 @@ let ``--space parameter should be parsed with postfix`` () =
     test "10k" (10L * k)
     test "10m" (10L * M)
     test "10M" (10L * M)
+
+[<Fact>]
+let ``--force parameter should be parsed``(): unit =
+    Assert.False((parseCommandLine Array.empty).Force)
+    Assert.True((parseCommandLine [|"--force"|]).Force)

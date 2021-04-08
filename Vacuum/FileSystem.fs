@@ -24,6 +24,9 @@ module File =
     let create(p: AbsolutePath): FileStream =
         File.Create p.EscapedPathString
 
+    let delete(p: AbsolutePath): unit =
+        File.Delete p.EscapedPathString
+
     let recycle(p: AbsolutePath) =
         FileSystem.DeleteFile(p.EscapedPathString, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin)
 

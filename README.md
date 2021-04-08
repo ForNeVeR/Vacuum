@@ -34,6 +34,7 @@ Main command-line arguments:
 - `(-s|--space) (<number>|<number>k|<number>m)` amount of space to clean up (`k`
   = kibibytes, m = mebibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
+- `(-f|--force)`: forces Vacuum to delete the entries it wasn't able to recycle.
 
 Consult the embedded help system for the detailed parameter manual:
 

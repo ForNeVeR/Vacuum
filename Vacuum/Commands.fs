@@ -17,7 +17,12 @@ type Clean =
       [<Option('s',
                "space",
                HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k and m postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes.")>]
-      Space : string option }
+      Space : string option
+
+      [<Option('f',
+               "force",
+               HelpText = "Force to delete entries that weren't movable into a recycle bin.")>]
+      Force: bool }
 
     member this.BytesToFree =
         let allButLast (s : string) = s.Substring (0, s.Length - 1)

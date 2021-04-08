@@ -17,15 +17,30 @@ let ``Cleaner should always clean the bytes it told to`` () =
         Temp.CreateFile("file1.txt", DateTime(2011, 1, 1), 10L * M)
         Temp.CreateFile("file2.txt", DateTime(2011, 1, 1), 10L * M)
     |]
-    ignore <| Program.clean directory.Path (DateTime (2012, 1, 1)) (Some <| 15L * M)
+    ignore <| Program.clean directory.Path (DateTime (2012, 1, 1)) (Some <| 15L * M) false
     Assert.Equal<string> ([| "file2.txt" |], directory.GetFiles())
 
 [<Fact>]
-let ``Cleaner should not fail on long paths`` () =
+let ``Cleaner should not fail on long paths``(): unit =
     let fileName = String ('x', 251) + ".txt"
     use directory = prepareEnvironment [| Temp.CreateFile(fileName, DateTime(2010, 1, 1)) |]
-    ignore <| Program.clean directory.Path (DateTime (2011, 1, 1)) None
-    Assert.Equal<string> ([| fileName |], directory.GetFiles()) // TODO: It should delete the file actually
+    let stats = Program.clean directory.Path (DateTime (2011, 1, 1)) None false
+    Assert.Equal([| fileName |], directory.GetFiles())
+
+[<Fact>]
+let ``Cleaner should delete long paths when forced``(): unit =
+    let fileName = String ('x', 251) + ".txt"
+    use directory = prepareEnvironment [| Temp.CreateFile(fileName, DateTime(2010, 1, 1)) |]
+    let stats = Program.clean directory.Path (DateTime (2011, 1, 1)) None true
+    Assert.Equal(1, stats.States.[ForceDeleted])
+    Assert.Equal(Array.empty, directory.GetFiles())
+
+[<Fact>]
+let ``Cleaner should delete a file name ending with dot when forced``(): unit =
+    use directory = prepareEnvironment [| Temp.CreateFile("foo.", DateTime(2010, 1, 1)) |]
+    let stats = Program.clean directory.Path (DateTime (2011, 1, 1)) None true
+    Assert.Equal(1, stats.States.[ForceDeleted])
+    Assert.Equal(Array.empty, directory.GetFiles())
 
 [<Fact(Skip = "System call level is not correct")>]
 let ``Cleaner should properly clean the directory trees with paths consisting of spaces``(): unit =
@@ -45,7 +60,7 @@ let ``Cleaner should not fail on invalid junctions``(): unit =
     let directory = testDataRoot.Path / "directory"
     FileSystem.Directory.deleteRecursive directory
 
-    let result = Program.clean testDataRoot.Path (DateTime(2011, 1, 1)) None
+    let result = Program.clean testDataRoot.Path (DateTime(2011, 1, 1)) None false
     Assert.Equal(0, result.States.[ScanError])
 
 [<Fact>]
@@ -77,5 +92,5 @@ let ``Cleaner should clean empty directories``(): unit =
     use testDataRoot = prepareEnvironment [|
         Temp.CreateDirectory("mydir", DateTime(2010, 1, 1))
     |]
-    let stats = Program.clean testDataRoot.Path (DateTime(2011, 1, 1)) None
-    Assert.Equal(1, stats.States.[Ok])
+    let stats = Program.clean testDataRoot.Path (DateTime(2011, 1, 1)) None false
+    Assert.Equal(1, stats.States.[Recycled])

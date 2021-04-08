@@ -49,7 +49,30 @@ let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError:
         error $"Error when scanning %s{path.RawPathString}: %s{ex.Message}"
         {| NeedToRemove = false; HasScanError = true |}
 
-let private remove item =
+let private reportError(ex: Exception) =
+    error ex.Message
+    Console.Error.WriteLine (ex.ToString ())
+
+let private forceRemove item =
+    try
+        if ReparsePoint.exists item then
+            printf $"Forced deletion of a reparse point %s{item.RawPathString}… "
+            ReparsePoint.delete item
+        else if File.exists item then
+            printf $"Forced deletion of a file %s{item.RawPathString}… "
+            File.delete item
+        else
+            printf $"Forced deletion of a directory %s{item.RawPathString}… "
+            Directory.deleteRecursive item
+
+        ok()
+        ForceDeleted
+    with
+    | ex ->
+        reportError ex
+        Error
+
+let private remove force item =
     try
         if ReparsePoint.exists item then
             printf $"Removing reparse point %s{item.RawPathString}… "
@@ -63,13 +86,14 @@ let private remove item =
 
         ok ()
 
-        Ok
+        Recycled
     with
     | ex ->
-        error ex.Message
-        Console.Error.WriteLine (ex.ToString ())
+        reportError ex
 
-        Error
+        if force then
+            forceRemove item
+        else Error
 
 let rec private getEntrySize path =
     if File.exists path then
@@ -92,7 +116,7 @@ let private takeBytes bytes (files: AbsolutePath seq) =
             enumerator.Dispose()
     }
 
-let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option): CleanResult =
+let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option) (forceDelete: bool): CleanResult =
     let stopwatch = Stopwatch ()
     stopwatch.Start ()
 
@@ -120,7 +144,7 @@ let clean (directory: AbsolutePath) (date: DateTime) (bytesToFree: int64 option)
 
     let states =
         filesToDelete
-        |> Seq.map remove
+        |> Seq.map(remove forceDelete)
         |> Seq.groupBy id
         |> Seq.map (fun (key, s) -> key, Seq.length s)
         |> Map.ofSeq
@@ -148,7 +172,7 @@ let main args =
         let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
         let period = defaultArg options.Period defaultPeriod
         let date = DateTime.UtcNow.AddDays (-(double period))
-        let result = clean (AbsolutePath.create directory) date options.BytesToFree
+        let result = clean (AbsolutePath.create directory) date options.BytesToFree options.Force
 
         info $"\nDirectory %s{result.Directory.RawPathString} cleaned up"
         info (sprintf "  Cleaned up files older than %s" (result.CleanedDate.ToString "s"))
@@ -157,11 +181,13 @@ let main args =
         info $"  Items after cleanup: %d{result.ItemsAfter}"
 
         let getResult r = defaultArg (Map.tryFind r result.States) 0
-        let successes = getResult Ok
+        let successes = getResult Recycled
+        let forceDeleted = getResult ForceDeleted
         let errors = getResult Error
         let scanErrors = getResult ScanError
 
-        printColor ConsoleColor.Green $"\n  Successfully deleted: %d{successes}"
+        printColor ConsoleColor.Green $"\n  Recycled: %d{successes}"
+        printColor ConsoleColor.Green $"\n  Force deleted: %d{forceDeleted}"
         printColor ConsoleColor.Red $"  Cannot delete: %d{errors}"
         if scanErrors > 0 then
             printColor ConsoleColor.Red $"  Scan errors: %d{scanErrors}"
