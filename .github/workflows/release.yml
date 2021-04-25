@@ -32,9 +32,9 @@ jobs:
 
       - name: Read changelog
         id: changelog
-        uses: mindsers/changelog-reader-action@v2
+        uses: ForNeVeR/ChangelogAutomation.action@v1
         with:
-          version: ${{ steps.version.outputs.version }}
+          output: ./release-notes.md
 
       - name: Create release
         id: release
@@ -44,7 +44,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Vacuum v${{ steps.version.outputs.version }}
-          body: ${{ steps.changelog.outputs.changes }}
+          body_path: ./release-notes.md
       - name: Upload distribution
         uses: actions/upload-release-asset@v1
         env:
