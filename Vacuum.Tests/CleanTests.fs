@@ -26,6 +26,7 @@ let ``Cleaner should not fail on long paths``(): unit =
     use directory = prepareEnvironment [| Temp.CreateFile(fileName, DateTime(2010, 1, 1)) |]
     let stats = Program.clean directory.Path (DateTime (2011, 1, 1)) None false
     Assert.Equal([| fileName |], directory.GetFiles())
+    Assert.Equal(1, stats.States.[Error])
 
 [<Fact>]
 let ``Cleaner should delete long paths when forced``(): unit =
@@ -42,13 +43,17 @@ let ``Cleaner should delete a file name ending with dot when forced``(): unit =
     Assert.Equal(1, stats.States.[ForceDeleted])
     Assert.Equal(Array.empty, directory.GetFiles())
 
-[<Fact(Skip = "System call level is not correct")>]
-let ``Cleaner should properly clean the directory trees with paths consisting of spaces``(): unit =
+[<Fact>]
+let ``Cleaner should be able to force-delete the directory trees with paths consisting of spaces``(): unit =
     use directory = prepareEnvironment [
-        Temp.CreateFile(" / / /name.txt", DateTime(2010, 1, 1))
+        Temp.CreateFile(" / / /name.txt")
+        Temp.CreateDirectory(" / / /")
+        Temp.CreateDirectory(" / /")
+        Temp.CreateDirectory(" /")
     ]
-    ignore <| Program.clean directory.Path (DateTime(2011, 1, 1)) None
+    let result = Program.clean directory.Path (DateTime(2011, 1, 1)) None true
     Assert.Empty(Array.ofSeq <| directory.GetFiles())
+    Assert.Equal(1, result.States.[ForceDeleted])
 
 [<Fact>]
 let ``Cleaner should not fail on invalid junctions``(): unit =

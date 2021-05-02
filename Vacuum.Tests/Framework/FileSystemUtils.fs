@@ -41,7 +41,7 @@ let private setDirectoryDate =
 let private setJunctionDate =
     setDate [| ReparsePoint.setCreationTimeUtc; ReparsePoint.setLastWriteTimeUtc |]
 
-let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEntryInfo) =
+let private createEntry (rootLocation: AbsolutePath) (file: FileSystemEntryInfo) =
     match file.Entry with
     | File entry ->
         let path = rootLocation / entry.Path
@@ -56,7 +56,7 @@ let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEn
     | Directory entry ->
         let path = rootLocation / entry.Path
         Directory.create path
-        setDirectoryDate path minDate
+        setDirectoryDate path file.Date
     | Junction entry ->
         let junctionPath = rootLocation / entry.Path
         let targetPath = rootLocation / entry.TargetPath
@@ -67,7 +67,7 @@ let private createEntry (rootLocation: AbsolutePath) minDate (file: FileSystemEn
             LinkType.Junction
         )
 
-        setJunctionDate junctionPath minDate
+        setJunctionDate junctionPath file.Date
 
 let prepareEnvironment (infos : FileSystemEntryInfo seq) : DisposableDirectory =
     let infos' = Seq.cache infos
@@ -82,6 +82,6 @@ let prepareEnvironment (infos : FileSystemEntryInfo seq) : DisposableDirectory =
             |> Seq.map (fun s -> s.Date)
             |> Seq.min
         setDirectoryDate path minDate
-        infos' |> Seq.iter(createEntry path minDate)
+        infos' |> Seq.iter(createEntry path)
 
     { Path = path }
