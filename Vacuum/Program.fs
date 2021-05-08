@@ -187,13 +187,15 @@ let main args =
         let scanErrors = getResult ScanError
 
         printf "\n"
-        let printStatEntry forceOutput color label number =
-            if number > 0 || forceOutput then printColor color $"  %s{label}: %d{number}"
+        let printStatEntry color label number =
+            printColor color $"  %s{label}: %d{number}"
+        let printStatEntryOpt color label number =
+            if number > 0 then printStatEntry color label number
 
-        printStatEntry true ConsoleColor.Green "Recycled" recycled
-        printStatEntry false ConsoleColor.Green "Force deleted" forceDeleted
-        printStatEntry false ConsoleColor.Red "Cannot delete" errors
-        printStatEntry false ConsoleColor.Red "Scan errors" scanErrors
+        printStatEntry ConsoleColor.Green "Recycled" recycled
+        printStatEntryOpt ConsoleColor.Green "Force deleted" forceDeleted
+        printStatEntryOpt ConsoleColor.Red "Cannot delete" errors
+        printStatEntryOpt ConsoleColor.Red "Scan errors" scanErrors
 
         info $"\n  Total time taken: %A{result.TimeTaken}"
 
