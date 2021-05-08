@@ -181,16 +181,19 @@ let main args =
         info $"  Items after cleanup: %d{result.ItemsAfter}"
 
         let getResult r = defaultArg (Map.tryFind r result.States) 0
-        let successes = getResult Recycled
+        let recycled = getResult Recycled
         let forceDeleted = getResult ForceDeleted
         let errors = getResult Error
         let scanErrors = getResult ScanError
 
-        printColor ConsoleColor.Green $"\n  Recycled: %d{successes}"
-        printColor ConsoleColor.Green $"\n  Force deleted: %d{forceDeleted}"
-        printColor ConsoleColor.Red $"  Cannot delete: %d{errors}"
-        if scanErrors > 0 then
-            printColor ConsoleColor.Red $"  Scan errors: %d{scanErrors}"
+        printf "\n"
+        let printStatEntry forceOutput color label number =
+            if number > 0 || forceOutput then printColor color $"  %s{label}: %d{number}"
+
+        printStatEntry true ConsoleColor.Green "Recycled" recycled
+        printStatEntry false ConsoleColor.Green "Force deleted" forceDeleted
+        printStatEntry false ConsoleColor.Red "Cannot delete" errors
+        printStatEntry false ConsoleColor.Red "Scan errors" scanErrors
 
         info $"\n  Total time taken: %A{result.TimeTaken}"
 

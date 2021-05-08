@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changed
+- Slightly updated statistics output (less redundant information, less empty lines)
+
 ## [1.4.0] - 2021-04-08
 ### Added
 - `--force` option to delete the entries that we weren't able to recycle
