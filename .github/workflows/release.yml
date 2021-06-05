@@ -25,7 +25,7 @@ jobs:
           dotnet-version: '5.0.x'
 
       - name: Publish
-        run: dotnet publish Vacuum --configuration Release --output ./publish
+        run: dotnet publish Vacuum --runtime win-x64 --configuration Release --output ./publish -p:PublishTrimmed=true -p:PublishSingleFile=true
       - name: Package distribution
         shell: pwsh
         run: Compress-Archive ./publish/* ./vacuum-v${{ steps.version.outputs.version }}.zip

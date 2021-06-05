@@ -8,6 +8,7 @@ Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Changed
 - Slightly updated statistics output (less redundant information, less empty lines)
+- Project is now published as a self-contained single-file binary (no .NET runtime dependency)
 
 ## [1.4.0] - 2021-04-08
 ### Added
