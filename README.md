@@ -6,7 +6,7 @@ Windows temporary directory cleanup tool.
 Requirements
 ------------
 
-To develop the program, [.NET][dotnet] SDK 5.0 or later is required.
+To develop the program, [.NET][dotnet] SDK 6.0 or later is required.
 
 Usage
 -----

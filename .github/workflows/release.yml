@@ -22,10 +22,10 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '6.0.x'
 
       - name: Publish
-        run: dotnet publish Vacuum --runtime win-x64 --configuration Release --output ./publish -p:PublishTrimmed=true -p:PublishSingleFile=true
+        run: dotnet publish Vacuum --runtime win-x64 --self-contained --configuration Release --output ./publish -p:PublishTrimmed=true -p:PublishSingleFile=true
       - name: Package distribution
         shell: pwsh
         run: Compress-Archive ./publish/* ./vacuum-v${{ steps.version.outputs.version }}.zip
