@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- [#67: Unable to delete a file from a directory ending with dot](https://github.com/ForNeVeR/Vacuum/issues/67)
+
 ## [1.5.0] - 2021-12-12
 ### Changed
 - Slightly updated statistics output (less redundant information, less empty lines)
