@@ -38,6 +38,12 @@ let ``AbsolutePath.create throws for relative path``(): unit =
     ignore <| Assert.ThrowsAny<Exception>(fun () -> ignore <| AbsolutePath.create @"\disk relative path")
 
 [<Fact>]
+let ``/ operator normalizes the path string``(): unit =
+    let path = AbsolutePath.create @"C:\Temp\"
+    let relativePath = "foo/bar"
+    Assert.Equal(AbsolutePath.create @"C:\Temp\foo\bar", path / relativePath)
+
+[<Fact>]
 let ``AbsolutePath.EscapedPathString uses UNC for space-ending path``(): unit =
     let path = AbsolutePath.create @"C:\Temp\path "
     Assert.Equal(@"\\?\C:\Temp\path ", path.EscapedPathString)
@@ -46,6 +52,11 @@ let ``AbsolutePath.EscapedPathString uses UNC for space-ending path``(): unit =
 let ``AbsolutePath.EscapedPathString uses UNC for dot-ending path``(): unit =
     let path = AbsolutePath.create @"C:\Temp\path."
     Assert.Equal(@"\\?\C:\Temp\path.", path.EscapedPathString)
+
+[<Fact>]
+let ``AbsolutePath::EscapedPathString uses UNC prefix if parent directory ends with dot``(): unit =
+    let path = AbsolutePath.create @"C:\Temp\path.\foo.txt"
+    Assert.Equal(@"\\?\C:\Temp\path.\foo.txt", path.EscapedPathString)
 
 [<Fact>]
 let ``AbsolutePath.GetParent() should return a proper parent for a file in a space-ending directory``() =
@@ -58,6 +69,12 @@ let ``AbsolutePath.GetParent() should return a proper parent for multiple space-
     let path = AbsolutePath.create @"C:\Temp\ \ \"
     let parent = path.GetParent()
     Assert.Equal(AbsolutePath.create @"C:\Temp\ \", parent)
+
+[<Fact>]
+let ``AbsolutePath::GetParent preserves trailing dots``(): unit =
+    let path = AbsolutePath.create @"C:\Temp\aaa.\file.txt"
+    let parent = path.GetParent()
+    Assert.Equal(AbsolutePath.create @"C:\Temp\aaa.\", parent)
 
 [<Fact>]
 let ``AbsolutePath.FileName should return a space for a directory consisting of space``() =

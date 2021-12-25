@@ -44,6 +44,24 @@ let ``Cleaner should delete a file name ending with dot when forced``(): unit =
     Assert.Equal(Array.empty, directory.GetFiles())
 
 [<Fact>]
+let ``Cleaner is unable to delete a file from a directory ending with a dot without force mode``(): unit =
+    use directory = prepareEnvironment [|
+        Temp.CreateFile("ddd./test.txt")
+        Temp.CreateDirectory "ddd."
+    |]
+    let stats = Program.clean directory.Path (Temp.DefaultDateTime.AddDays(1.0)) None false
+    Assert.Equal(1, stats.States[Error])
+
+[<Fact>]
+let ``Cleaner deletes a file in a directory ending with a dot when forced``(): unit =
+    use directory = prepareEnvironment [|
+        Temp.CreateFile("ddd./test.txt")
+        Temp.CreateDirectory "ddd."
+    |]
+    let stats = Program.clean directory.Path (Temp.DefaultDateTime.AddDays(1.0)) None true
+    Assert.Equal(1, stats.States[ForceDeleted])
+
+[<Fact>]
 let ``Cleaner should be able to force-delete the directory trees with paths consisting of spaces``(): unit =
     use directory = prepareEnvironment [
         Temp.CreateFile(" / / /name.txt")
