@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.5.1] - 2021-12-25
 ### Fixed
 - [#67: Unable to delete a file from a directory ending with dot](https://github.com/ForNeVeR/Vacuum/issues/67)
 
@@ -104,4 +104,5 @@ temporary directory.
 [1.3.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.2.0...v1.3.0
 [1.4.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.3.0...v1.4.0
 [1.5.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.4.0...v1.5.0
-[Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.0...v1.5.1
+[Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.1...HEAD
