@@ -10,7 +10,8 @@ To release a new version:
 3. Change the version number in `Vacuum/Vacuum.fsproj`.
 4. Make sure there's a properly formed version entry in [the
    changelog][changelog].
-5. Push a tag named `v<VERSION>` to GitHub.
+5. Ensure that the third-party licenses are up-to-date.
+6. Push a tag named `v<VERSION>` to GitHub.
 
 [changelog]: ./CHANGELOG.md
 [license]: ./LICENSE.md
