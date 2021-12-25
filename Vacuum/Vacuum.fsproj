@@ -20,5 +20,7 @@
         <None Include="../CHANGELOG.md" CopyToPublishDirectory="Always" />
         <None Include="../LICENSE.md" CopyToPublishDirectory="Always" />
         <None Include="../README.md" CopyToPublishDirectory="Always" />
+        <None Include="../THIRD-PARTY-NOTICES.md" CopyToPublishDirectory="Always" />
+        <None Include="../third-party/**/*" CopyToPublishDirectory="Always" LinkBase="third-party" />
     </ItemGroup>
 </Project>

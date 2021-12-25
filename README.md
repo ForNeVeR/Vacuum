@@ -45,6 +45,7 @@ Documentation
 - [Changelog][changelog]
 - [Maintainership][maintainership]
 - [License (MIT)][license]
+- [Third-party software][third-party]
 
 Download
 --------
@@ -59,5 +60,6 @@ section][releases].
 [maintainership]: ./MAINTAINERSHIP.md
 [path.get-temp-path]: https://docs.microsoft.com/en-us/dotnet/api/system.io.path.gettemppath?view=net-5.0&tabs=windows
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
+[third-party]: THIRD-PARTY-NOTICES.md
 
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
