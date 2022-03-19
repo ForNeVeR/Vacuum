@@ -22,7 +22,12 @@ type Clean =
       [<Option('f',
                "force",
                HelpText = "Force to delete entries that weren't movable into a recycle bin.")>]
-      Force: bool }
+      Force: bool
+
+      [<Option('w',
+               "what-if",
+               HelpText = "Only collects the files that will be removed, without actually removing anything.")>]
+      WhatIf: bool }
 
     member this.BytesToFree =
         let allButLast (s : string) = s.Substring (0, s.Length - 1)

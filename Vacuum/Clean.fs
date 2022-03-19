@@ -3,6 +3,7 @@
 open System
 open System.Diagnostics
 
+open Vacuum
 open Vacuum.FileSystem
 open Vacuum.Console
 
@@ -10,6 +11,8 @@ type CleanMode =
     | Normal
     /// Force to delete items when they are impossible to move to the recycle bin.
     | ForceDelete
+    /// Only print the names of the files that will be recycled; do not delete anything actually.
+    | WhatIf
 
 type CleanParameters = {
     Directory: AbsolutePath
@@ -32,7 +35,14 @@ type CleanParameters = {
             CleanMode = ForceDelete
         }
 
-type ProcessingStatus = Recycled | ForceDeleted | Error | ScanError
+        static member WhatIf(directory: AbsolutePath, date: DateTime, ?bytesToFree: int64): CleanParameters = {
+            Directory = directory
+            Date = date
+            BytesToFree = bytesToFree
+            CleanMode = WhatIf
+        }
+
+type ProcessingStatus = Recycled | ForceDeleted | Error | ScanError | WillBeRemoved
 
 type CleanResult = {
     Directory: AbsolutePath
@@ -92,26 +102,33 @@ let private forceRemove item =
         reportError ex
         Error
 
-let private remove force item =
+let private remove mode (item: AbsolutePath) =
+    let conditionalRemove removeAction itemType =
+        match mode with
+        | Normal | ForceDelete ->
+            printf $"Removing {itemType} {item.RawPathString}… "
+            removeAction item
+            ok()
+            Recycled
+        | WhatIf ->
+            printfn $"Will be removed: {itemType} {item.RawPathString}."
+            WillBeRemoved
+
     try
-        if ReparsePoint.exists item then
-            printf $"Removing reparse point %s{item.RawPathString}… "
-            ReparsePoint.recycle item
-        else if File.exists item then
-            printf $"Removing file %s{item.RawPathString}… "
-            File.recycle item
-        else
-            printf $"Removing directory %s{item.RawPathString}… "
-            Directory.recycle item
+        let removalResult =
+            if ReparsePoint.exists item then
+                conditionalRemove ReparsePoint.recycle "reparse point"
+            else if File.exists item then
+                conditionalRemove File.recycle "file"
+            else
+                conditionalRemove Directory.recycle "directory"
 
-        ok ()
-
-        Recycled
+        removalResult
     with
     | ex ->
         reportError ex
 
-        if force then
+        if mode = ForceDelete then
             forceRemove item
         else Error
 
@@ -165,10 +182,9 @@ let clean ({ Directory = directory
                 if scanResult.HasScanError then errorCount <- errorCount + 1
             upcast files, errorCount
 
-    let forceDelete = cleanMode = ForceDelete
     let states =
         filesToDelete
-        |> Seq.map(remove forceDelete)
+        |> Seq.map(remove cleanMode)
         |> Seq.groupBy id
         |> Seq.map (fun (key, s) -> key, Seq.length s)
         |> Map.ofSeq

@@ -11,6 +11,21 @@ open Vacuum.Tests.Framework
 open Vacuum.Tests.Framework.FileSystemUtils
 
 [<Fact>]
+let ``Cleaner removes an outdated file``(): unit =
+    use directory = prepareEnvironment [| Temp.CreateFile("file.txt") |]
+    let result = clean <| CleanParameters.Normal(directory.Path, Temp.DefaultDateTime.AddDays(1.0))
+    Assert.Equal(1, result.States[Recycled])
+    Assert.Equal(Array.empty, directory.GetFiles())
+
+[<Fact>]
+let ``Cleaner doesn't remove anything in WhatIf mode``(): unit =
+    use directory = prepareEnvironment [| Temp.CreateFile("file.txt") |]
+    let result = clean <| CleanParameters.WhatIf(directory.Path, Temp.DefaultDateTime.AddDays(1.0))
+    Assert.False(result.States.ContainsKey Recycled)
+    Assert.Equal(1, result.States[WillBeRemoved])
+    Assert.Equal([| "file.txt" |], directory.GetFiles())
+
+[<Fact>]
 let ``Cleaner should always clean the bytes it told to`` () =
     let M = 1024L * 1024L
     use directory = prepareEnvironment [|
