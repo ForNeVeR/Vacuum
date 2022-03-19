@@ -15,7 +15,8 @@
         <Compile Include="AbsolutePath.fs" />
         <Compile Include="NativeFunctions.fs" />
         <Compile Include="FileSystem.fs" />
-        <Compile Include="CleanResult.fs" />
+        <Compile Include="Console.fs" />
+        <Compile Include="Clean.fs" />
         <Compile Include="Program.fs" />
         <None Include="../CHANGELOG.md" CopyToPublishDirectory="Always" />
         <None Include="../LICENSE.md" CopyToPublishDirectory="Always" />
