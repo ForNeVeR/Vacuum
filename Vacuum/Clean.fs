@@ -83,17 +83,17 @@ let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError:
         error $"Error when scanning %s{path.RawPathString}: %s{ex.Message}"
         {| NeedToRemove = false; HasScanError = true |}
 
-let private forceRemove item =
+let private forceRemove(item: IFileSystemItem) =
     try
-        if ReparsePoint.exists item then
-            printf $"Forced deletion of a reparse point %s{item.RawPathString}… "
-            ReparsePoint.delete item
-        else if File.exists item then
-            printf $"Forced deletion of a file %s{item.RawPathString}… "
-            File.delete item
+        if ReparsePoint.exists item.Path then
+            printf $"Forced deletion of a reparse point %s{item.Present()}… "
+            ReparsePoint.delete item.Path
+        else if File.exists item.Path then
+            printf $"Forced deletion of a file %s{item.Present()}… "
+            File.delete item.Path
         else
-            printf $"Forced deletion of a directory %s{item.RawPathString}… "
-            Directory.deleteRecursive item
+            printf $"Forced deletion of a directory %s{item.Present()}… "
+            Directory.deleteRecursive item.Path
 
         ok()
         ForceDeleted
@@ -102,23 +102,23 @@ let private forceRemove item =
         reportError ex
         Error
 
-let private remove mode (item: AbsolutePath) =
+let private remove mode (item: IFileSystemItem) =
     let conditionalRemove removeAction itemType =
         match mode with
         | Normal | ForceDelete ->
-            printf $"Removing {itemType} {item.RawPathString}… "
-            removeAction item
+            printf $"Removing {itemType} {item.Present()}… "
+            removeAction item.Path
             ok()
             Recycled
         | WhatIf ->
-            printfn $"Will be removed: {itemType} {item.RawPathString}."
+            printfn $"Will be removed: {itemType} {item.Present()}."
             WillBeRemoved
 
     try
         let removalResult =
-            if ReparsePoint.exists item then
+            if ReparsePoint.exists item.Path then
                 conditionalRemove ReparsePoint.recycle "reparse point"
-            else if File.exists item then
+            else if File.exists item.Path then
                 conditionalRemove File.recycle "file"
             else
                 conditionalRemove Directory.recycle "directory"
@@ -140,15 +140,17 @@ let rec private getEntrySize path =
         |> Seq.map getEntrySize
         |> Seq.sum
 
-let private takeBytes bytes (files: AbsolutePath seq) =
+let private takeBytes bytes (files: AbsolutePath seq): IFileSystemItem seq =
     seq {
         let enumerator = files.GetEnumerator()
         try
             let mutable currentSize = 0L
             while currentSize < bytes && enumerator.MoveNext() do
                 let entry = enumerator.Current
-                currentSize <- currentSize + getEntrySize entry
-                yield entry
+                let entrySize = getEntrySize entry
+
+                currentSize <- currentSize + entrySize
+                yield SizedFileSystemItem(entry, entrySize)
         finally
             enumerator.Dispose()
     }
@@ -174,11 +176,11 @@ let clean ({ Directory = directory
             |> Seq.sortBy getLastFileAccessDate
             |> takeBytes bytes, 0
         | None ->
-            let files = ResizeArray()
+            let files = ResizeArray<IFileSystemItem>()
             let mutable errorCount = 0
             for entry in allEntries do
                 let scanResult = needToRemoveTopLevel date entry
-                if scanResult.NeedToRemove then files.Add entry
+                if scanResult.NeedToRemove then files.Add(FileSystemItem(entry))
                 if scanResult.HasScanError then errorCount <- errorCount + 1
             upcast files, errorCount
 
