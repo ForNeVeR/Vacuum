@@ -81,9 +81,11 @@ Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
 ## [0.3.0] - 2016-02-09
 ### Added
-- Embedded help
-- Flag to override cleaned directory
-- Flag to override period after which items are considered for cleanup
+- `clean` command (not mandatory to pass, is deduced by default)
+- `--help`: embedded help system
+- `--version` option to print the program version
+- `--directory` flag to override cleaned directory
+- `--period` flag to override period after which items are considered for cleanup
 
 ## [0.2.0] - 2016-01-29
 ### Changed
@@ -91,7 +93,7 @@ Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0] - 2016-01-24
 ### Added
-- Statistics logging
+- Log additional information (cleanup date, items before and after the cleanup, total time taken)
 
 ## [0.0.1] - 2016-01-23
 This is the initial version of the program to delete old entries from the system
