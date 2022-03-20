@@ -17,7 +17,10 @@ let main args =
     | Some options ->
         let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
         let period = defaultArg options.Period defaultPeriod
-        let date = DateTime.UtcNow.AddDays (-(double period))
+        let date =
+            if options.BytesToFree.IsNone
+            then Some <| DateTime.UtcNow.AddDays(-(double period))
+            else None
         let cleanMode =
             match options.Force, options.WhatIf with
             | false, false -> Normal
@@ -34,7 +37,9 @@ let main args =
         let result = clean parameters
 
         info $"\nDirectory %s{result.Directory.RawPathString} cleaned up"
-        info (sprintf "  Report of cleaning up items older than %s" (result.CleanedDate.ToString "s"))
+        match result.CleanedDate with
+        | Some cleanedDate -> info $"  Report of cleaning up items older than {cleanedDate:s}"
+        | None -> info "  Report of cleaning up items"
 
         info $"\n  Items before cleanup: %d{result.ItemsBefore}"
         if cleanMode <> WhatIf then

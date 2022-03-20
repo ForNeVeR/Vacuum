@@ -16,26 +16,26 @@ type CleanMode =
 
 type CleanParameters = {
     Directory: AbsolutePath
-    Date: DateTime
+    Date: DateTime option
     BytesToFree: int64 option
     CleanMode: CleanMode
 }
     with
-        static member Normal(directory: AbsolutePath, date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member Normal(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
             CleanMode = Normal
         }
 
-        static member ForceDelete(directory: AbsolutePath, date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member ForceDelete(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
             CleanMode = ForceDelete
         }
 
-        static member WhatIf(directory: AbsolutePath, date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member WhatIf(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
@@ -46,7 +46,7 @@ type ProcessingStatus = Recycled | ForceDeleted | Error | ScanError | WillBeRemo
 
 type CleanResult = {
     Directory: AbsolutePath
-    CleanedDate: DateTime
+    CleanedDate: DateTime option
     ItemsBefore: int
     ItemsAfter: int
     States: Map<ProcessingStatus, int>
@@ -137,6 +137,7 @@ let rec private getEntrySize path =
         NativeFunctions.getCompressedFileSize path
     else
         Directory.enumerateFileSystemEntriesRecursively path
+        |> Seq.filter File.exists
         |> Seq.map getEntrySize
         |> Seq.sum
 
@@ -170,19 +171,21 @@ let clean ({ Directory = directory
 
     let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete, scanErrorCount =
-        match bytesToFree with
-        | Some bytes ->
-            allEntries
-            |> Seq.sortBy getLastFileAccessDate
-            |> takeBytes bytes, 0
-        | None ->
+        match date, bytesToFree with
+        | Some date, None ->
             let files = ResizeArray<IFileSystemItem>()
             let mutable errorCount = 0
             for entry in allEntries do
                 let scanResult = needToRemoveTopLevel date entry
                 if scanResult.NeedToRemove then files.Add(FileSystemItem(entry))
                 if scanResult.HasScanError then errorCount <- errorCount + 1
-            upcast files, errorCount
+            files :> _ seq, errorCount
+        | None, Some bytes ->
+            allEntries
+            |> Seq.sortBy getLastFileAccessDate
+            |> takeBytes bytes, 0
+        | _, _ -> failwith "Invalid parameters: exactly one of date and bytesToFree should be specified."
+
 
     let states =
         filesToDelete

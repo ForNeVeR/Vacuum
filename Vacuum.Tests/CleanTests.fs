@@ -29,11 +29,11 @@ let ``Cleaner doesn't remove anything in WhatIf mode``(): unit =
 let ``Cleaner should always clean the bytes it told to`` () =
     let M = 1024L * 1024L
     use directory = prepareEnvironment [|
-        Temp.CreateFile("file0.txt", DateTime(2010, 1, 1), 10L * M)
-        Temp.CreateFile("file1.txt", DateTime(2011, 1, 1), 10L * M)
-        Temp.CreateFile("file2.txt", DateTime(2011, 1, 1), 10L * M)
+        Temp.CreateFile("file0.txt", size = 10L * M)
+        Temp.CreateFile("file1.txt", size = 10L * M)
+        Temp.CreateFile("file2.txt", size = 10L * M)
     |]
-    clean <| CleanParameters.Normal(directory.Path, DateTime(2012, 1, 1), 15L * M) |> ignore
+    clean <| CleanParameters.Normal(directory.Path, bytesToFree = 15L * M) |> ignore
     Assert.Equal<string> ([| "file2.txt" |], directory.GetFiles())
 
 [<Fact>]
@@ -133,3 +133,15 @@ let ``Cleaner should clean empty directories``(): unit =
     |]
     let stats = clean <| CleanParameters.Normal(testDataRoot.Path, DateTime(2011, 1, 1))
     Assert.Equal(1, stats.States[Recycled])
+
+[<Fact>]
+let ``Cleaner should properly calculate occupied space``(): unit =
+    use testDataRoot = prepareEnvironment [|
+        Temp.CreateFile("directory1/subDir1/subDir2/file.txt", size = 1)
+        Temp.CreateFile("directory2/subDir1/subDir2/file.txt", size = 1)
+    |]
+
+    let stats = clean <| CleanParameters.Normal(testDataRoot.Path, bytesToFree = 2)
+
+    Assert.Empty(Directory.enumerateFileSystemEntries testDataRoot.Path)
+    Assert.Equal(2, stats.States[Recycled])
