@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2022-03-20
+### Added
+- [#5: `--what-if` option to preview the deleted files instead of recycling them](https://github.com/ForNeVeR/Vacuum/issues/5)
+- Show space occupied by removed entries in a mode when this space is calculated
+
+### Fixed
+- [#4: `--space` parameter wasn't properly calculating amount of space occupied by files inside of nested directories](https://github.com/ForNeVeR/Vacuum/issues/4)
+
 ## [1.5.1] - 2021-12-25
 ### Fixed
 - [#67: Unable to delete a file from a directory ending with dot](https://github.com/ForNeVeR/Vacuum/issues/67)
@@ -105,4 +113,5 @@ temporary directory.
 [1.4.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.3.0...v1.4.0
 [1.5.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.4.0...v1.5.0
 [1.5.1]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.0...v1.5.1
+[1.6.0]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.1...v1.6.0
 [Unreleased]: https://github.com/ForNeVeR/Vacuum/compare/v1.5.1...HEAD
