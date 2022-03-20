@@ -143,17 +143,14 @@ let rec private getEntrySize path =
 
 let private takeBytes bytes (files: AbsolutePath seq): IFileSystemItem seq =
     seq {
-        let enumerator = files.GetEnumerator()
-        try
-            let mutable currentSize = 0L
-            while currentSize < bytes && enumerator.MoveNext() do
-                let entry = enumerator.Current
-                let entrySize = getEntrySize entry
+        use enumerator = files.GetEnumerator()
+        let mutable currentSize = 0L
+        while currentSize < bytes && enumerator.MoveNext() do
+            let entry = enumerator.Current
+            let entrySize = getEntrySize entry
 
-                currentSize <- currentSize + entrySize
-                yield SizedFileSystemItem(entry, entrySize)
-        finally
-            enumerator.Dispose()
+            currentSize <- currentSize + entrySize
+            yield SizedFileSystemItem(entry, entrySize)
     }
 
 let clean ({ Directory = directory
