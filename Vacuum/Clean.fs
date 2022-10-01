@@ -19,6 +19,7 @@ type CleanParameters = {
     Date: DateTime option
     BytesToFree: int64 option
     CleanMode: CleanMode
+    Verbose: bool
 }
     with
         static member Normal(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
@@ -26,6 +27,7 @@ type CleanParameters = {
             Date = date
             BytesToFree = bytesToFree
             CleanMode = Normal
+            Verbose = false
         }
 
         static member ForceDelete(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
@@ -33,6 +35,7 @@ type CleanParameters = {
             Date = date
             BytesToFree = bytesToFree
             CleanMode = ForceDelete
+            Verbose = false
         }
 
         static member WhatIf(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
@@ -40,6 +43,7 @@ type CleanParameters = {
             Date = date
             BytesToFree = bytesToFree
             CleanMode = WhatIf
+            Verbose = false
         }
 
 type ProcessingStatus = Recycled | ForceDeleted | Error | ScanError | WillBeRemoved
@@ -64,7 +68,7 @@ let private getLastFileAccessDate path =
 let private lastTouchedEarlierThan date path =
     getLastFileAccessDate path < date
 
-let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError: bool |} =
+let private needToRemoveTopLevel verbose date path: {| NeedToRemove: bool; HasScanError: bool |} =
     try
         let needToRemove =
             if File.exists path then
@@ -80,10 +84,10 @@ let private needToRemoveTopLevel date path: {| NeedToRemove: bool; HasScanError:
     with
     | :? UnauthorizedAccessException -> {| NeedToRemove = false; HasScanError = false |}
     | ex ->
-        error $"Error when scanning %s{path.RawPathString}: %s{ex.Message}"
+        reportError verbose (Some $"Error when scanning {path.RawPathString}") ex
         {| NeedToRemove = false; HasScanError = true |}
 
-let private forceRemove(item: IFileSystemItem) =
+let private forceRemove verbose (item: IFileSystemItem) =
     try
         if ReparsePoint.exists item.Path then
             printf $"Forced deletion of a reparse point %s{item.Present()}… "
@@ -99,10 +103,10 @@ let private forceRemove(item: IFileSystemItem) =
         ForceDeleted
     with
     | ex ->
-        reportError ex
+        reportError verbose None ex
         Error
 
-let private remove mode (item: IFileSystemItem) =
+let private remove verbose mode (item: IFileSystemItem) =
     let conditionalRemove removeAction itemType =
         match mode with
         | Normal | ForceDelete ->
@@ -126,10 +130,10 @@ let private remove mode (item: IFileSystemItem) =
         removalResult
     with
     | ex ->
-        reportError ex
+        reportError verbose None ex
 
         if mode = ForceDelete then
-            forceRemove item
+            forceRemove verbose item
         else Error
 
 let rec private getEntrySize path =
@@ -153,10 +157,13 @@ let private takeBytes bytes (files: AbsolutePath seq): IFileSystemItem seq =
             yield SizedFileSystemItem(entry, entrySize)
     }
 
-let clean ({ Directory = directory
-             Date = date
-             BytesToFree = bytesToFree
-             CleanMode = cleanMode }: CleanParameters): CleanResult =
+let clean({
+    Directory = directory
+    Date = date
+    BytesToFree = bytesToFree
+    CleanMode = cleanMode
+    Verbose = verbose
+}: CleanParameters): CleanResult =
     let stopwatch = Stopwatch()
     stopwatch.Start()
 
@@ -173,7 +180,7 @@ let clean ({ Directory = directory
             let files = ResizeArray<IFileSystemItem>()
             let mutable errorCount = 0
             for entry in allEntries do
-                let scanResult = needToRemoveTopLevel date entry
+                let scanResult = needToRemoveTopLevel verbose date entry
                 if scanResult.NeedToRemove then files.Add(FileSystemItem(entry))
                 if scanResult.HasScanError then errorCount <- errorCount + 1
             files :> _ seq, errorCount
@@ -186,7 +193,7 @@ let clean ({ Directory = directory
 
     let states =
         filesToDelete
-        |> Seq.map(remove cleanMode)
+        |> Seq.map(remove verbose cleanMode)
         |> Seq.groupBy id
         |> Seq.map (fun (key, s) -> key, Seq.length s)
         |> Map.ofSeq

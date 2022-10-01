@@ -33,6 +33,7 @@ let main args =
             Date = date
             BytesToFree = options.BytesToFree
             CleanMode = cleanMode
+            Verbose = options.Verbose
         }
         let result = clean parameters
 

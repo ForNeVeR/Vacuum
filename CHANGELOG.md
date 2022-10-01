@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] (1.7.0)
+### Changed
+- Exception call stacks are hidden by default.
+
+### Added
+- `(-v|--verbose)` parameter to show the call stacks.
+
 ## [1.6.0] - 2022-03-20
 ### Added
 - [#5: `--what-if` option to preview the deleted files instead of recycling them](https://github.com/ForNeVeR/Vacuum/issues/5)

@@ -33,6 +33,7 @@ Main command-line arguments:
   up the oldest items first.
 - `(-f|--force)`: forces Vacuum to delete the entries it wasn't able to recycle.
 - `(-w|--what-if)`: only prints the files that will be deleted instead of actually deleting them.
+- `(-v|--verbose)`: show exception call stacks.
 
 Consult the embedded help system for the detailed parameter manual:
 
