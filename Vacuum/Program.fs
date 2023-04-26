@@ -9,12 +9,18 @@ open Vacuum.Console
 
 let defaultPeriod = 30
 
+let chooseCleaner options =
+    if options.JetBrains
+    then
+
 [<EntryPoint>]
 let main args =
     initializeConsole()
 
     match CommandLineParser.parse args with
     | Some options ->
+        let cleaner = chooseCleaner options
+
         let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
         let period = defaultArg options.Period defaultPeriod
         let date =

@@ -30,6 +30,13 @@ type Clean =
         Force: bool
 
         [<Option(
+            'j',
+            "jetbrains-toolbox",
+            HelpText = "Remove old instances of JetBrains IDEs installed by JetBrains Toolbox."
+        )>]
+        JetBrains: bool
+
+        [<Option(
             'w',
             "what-if",
             HelpText = "Only collects the files that will be removed, without actually removing anything.")>]

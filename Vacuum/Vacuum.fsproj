@@ -18,6 +18,7 @@
         <Compile Include="Console.fs" />
         <Compile Include="FileSystemItems.fs" />
         <Compile Include="Clean.fs" />
+        <Compile Include="Cleaners.fs" />
         <Compile Include="Program.fs" />
         <None Include="../CHANGELOG.md" CopyToPublishDirectory="Always" />
         <None Include="../LICENSE.md" CopyToPublishDirectory="Always" />
