@@ -26,7 +26,7 @@ type Clean =
         [<Option(
             'f',
             "force",
-            HelpText = "Force to delete entries that weren't movable into a recycle bin.")>]
+            HelpText = "Force to delete entries that weren't movable into the recycle bin.")>]
         Force: bool
 
         [<Option(
