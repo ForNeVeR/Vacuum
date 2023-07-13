@@ -66,6 +66,15 @@ module private Kernel32 =
         FILETIME& lpLastWriteTime
     )
 
+    [<DllImport("Kernel32", CharSet = CharSet.Unicode, SetLastError = true)>]
+    extern bool GetDiskFreeSpaceW(
+        string lpRootPathName,
+        Native.DWORD& lpSectorsPerCluster,
+        Native.DWORD& lpBytesPerSector,
+        Native.DWORD& lpNumberOfFreeClusters,
+        Native.DWORD& lpTotalNumberOfClusters
+    )
+
 let getCompressedFileSize(path: AbsolutePath): int64 =
     let mutable high = 0
     let low = Kernel32.GetCompressedFileSize(path.EscapedPathString, &high)
@@ -95,3 +104,18 @@ let setLastWriteTimeUtc(path: AbsolutePath) (time: DateTime): unit =
         if Kernel32.SetFileTime(handle, &data.ftCreationTime, &data.ftLastAccessTime, &lastWriteTime)
         then throwLastWin32Error()
     )
+
+let getFreeDiskSpace(diskRoot: string): int64 =
+    let mutable sectorsPerCluster = 0u
+    let mutable bytesPerSector = 0u
+    let mutable numberOfFreeClusters = 0u
+    let mutable totalNumberOfClusters = 0u
+    if not <| Kernel32.GetDiskFreeSpaceW(
+        diskRoot,
+        &sectorsPerCluster,
+        &bytesPerSector,
+        &numberOfFreeClusters,
+        &totalNumberOfClusters)
+    then throwLastWin32Error()
+
+    int64 sectorsPerCluster * int64 bytesPerSector * int64 numberOfFreeClusters

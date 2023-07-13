@@ -43,8 +43,11 @@ let main args =
         | None -> info "  Report of cleaning up items"
 
         info $"\n  Items before cleanup: %d{result.ItemsBefore}"
+        info $"  Free disk space before cleanup: {presentSpace result.FreeDiskSpaceBefore}"
         if cleanMode <> WhatIf then
             info $"  Items after cleanup: %d{result.ItemsAfter}"
+            let space = result.FreeDiskSpaceAfter |> Option.map presentSpace |> Option.get
+            info $"  Free disk space after cleanup: {space}"
 
         let getResult r = defaultArg (Map.tryFind r result.States) 0
         let recycled = getResult Recycled

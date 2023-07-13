@@ -2,6 +2,7 @@
 
 open System
 open System.Diagnostics
+open System.IO
 
 open Vacuum
 open Vacuum.FileSystem
@@ -53,6 +54,8 @@ type CleanResult = {
     CleanedDate: DateTime option
     ItemsBefore: int
     ItemsAfter: int
+    FreeDiskSpaceBefore: int64
+    FreeDiskSpaceAfter: int64 option
     States: Map<ProcessingStatus, int>
     TimeTaken: TimeSpan
 }
@@ -172,6 +175,8 @@ let clean({
         info $"Cleaning %d{bytesToFree.Value} bytes"
 
     let itemsBefore = itemCount directory
+    let diskRoot = Path.GetPathRoot directory.RawPathString
+    let freeDiskSpaceBefore = NativeFunctions.getFreeDiskSpace diskRoot
 
     let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete, scanErrorCount =
@@ -200,11 +205,14 @@ let clean({
         |> Map.add ScanError scanErrorCount
 
     let itemsAfter = itemCount directory
+    let freeDiskSpaceAfter = if cleanMode = WhatIf then None else Some <| NativeFunctions.getFreeDiskSpace diskRoot
     let time = stopwatch.Elapsed
 
     { Directory = directory
       CleanedDate = date
       ItemsBefore = itemsBefore
       ItemsAfter = itemsAfter
+      FreeDiskSpaceBefore = freeDiskSpaceBefore
+      FreeDiskSpaceAfter = freeDiskSpaceAfter
       States = states
       TimeTaken = time }
