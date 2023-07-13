@@ -6,6 +6,9 @@ and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] (1.7.1)
+### Added
+- Free disk space report is printed after the cleanup.
+
 ### Fixed
 - Decimal point is no longer printed for file size in bytes (e.g. `0.00 B` is now just `0 B`).
 
