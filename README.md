@@ -31,6 +31,17 @@ Main command-line arguments:
 - `(-s|--space) (<number>|<number>k|<number>m)` amount of space to clean up (`k`
   = kibibytes, m = mebibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
+
+  > **Pro Tip:**
+  >
+  > If you use PowerShell, then it's possible to easily pass arbitrary sizes in bytes without any need for calculation. Try the following in shell:
+  >
+  > ```console
+  > $ Vacuum --space $(10gb)
+  > ```
+  >
+  > This will call `Vacuum --space 10737418240` (i.e. 10 gibibytes).
+
 - `(-f|--force)`: forces Vacuum to delete the entries it wasn't able to recycle.
 - `(-w|--what-if)`: only prints the files that will be deleted instead of actually deleting them.
 - `(-v|--verbose)`: show exception call stacks.
