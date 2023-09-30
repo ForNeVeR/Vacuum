@@ -34,7 +34,7 @@ Main command-line arguments:
 
   > **Pro Tip:**
   >
-  > If you use PowerShell, then it's possible to easily pass arbitrary sizes in bytes without any need for calculation. Try the following in shell:
+  > If you use PowerShell, then it's possible to [easily pass arbitrary sizes in bytes][docs.pwsh-numeric-literals] without any need for calculation. Try the following in shell:
   >
   > ```console
   > $ Vacuum --space $(10gb)
@@ -74,5 +74,6 @@ section][releases].
 [path.get-temp-path]: https://docs.microsoft.com/en-us/dotnet/api/system.io.path.gettemppath?view=net-5.0&tabs=windows
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
 [third-party]: THIRD-PARTY-NOTICES.md
+[docs.pwsh-numeric-literals]: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_numeric_literals
 
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
