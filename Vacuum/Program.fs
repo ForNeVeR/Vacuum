@@ -16,11 +16,15 @@ let main args =
     match CommandLineParser.parse args with
     | Some options ->
         let directory = defaultArg options.Directory (Directory.getTempPath().RawPathString)
-        let period = defaultArg options.Period defaultPeriod
-        let date =
-            if options.BytesToFree.IsNone
-            then Some <| DateTime.UtcNow.AddDays(-(double period))
-            else None
+        let date, bytesToFree, freeUntil =
+            match options.Period, options.BytesToFree, options.FreeUntil with
+            | Some period, None, None ->
+                Some <| DateTime.UtcNow.AddDays(-(double period)), None, None
+            | None, None, None ->
+                Some <| DateTime.UtcNow.AddDays(-(double defaultPeriod)), None, None
+            | None, Some bytes, None -> None, Some bytes, None
+            | None, None, Some bytes -> None, None, Some bytes
+            | _, _, _ -> failwith "Invalid flags: only one of --period, --space and --free are allowed."
         let cleanMode =
             match options.Force, options.WhatIf with
             | false, false -> Normal
@@ -31,7 +35,8 @@ let main args =
         let parameters = {
             Directory = AbsolutePath.create directory
             Date = date
-            BytesToFree = options.BytesToFree
+            BytesToFree = bytesToFree
+            FreeUntil = freeUntil
             CleanMode = cleanMode
             Verbose = options.Verbose
         }

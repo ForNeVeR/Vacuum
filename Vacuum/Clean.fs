@@ -19,30 +19,34 @@ type CleanParameters = {
     Directory: AbsolutePath
     Date: DateTime option
     BytesToFree: int64 option
+    FreeUntil: int64 option
     CleanMode: CleanMode
     Verbose: bool
 }
     with
-        static member Normal(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member Normal(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64, ?freeUntil: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
+            FreeUntil = freeUntil
             CleanMode = Normal
             Verbose = false
         }
 
-        static member ForceDelete(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member ForceDelete(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64, ?freeUntil: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
+            FreeUntil = freeUntil
             CleanMode = ForceDelete
             Verbose = false
         }
 
-        static member WhatIf(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64): CleanParameters = {
+        static member WhatIf(directory: AbsolutePath, ?date: DateTime, ?bytesToFree: int64, ?freeUntil: int64): CleanParameters = {
             Directory = directory
             Date = date
             BytesToFree = bytesToFree
+            FreeUntil = freeUntil
             CleanMode = WhatIf
             Verbose = false
         }
@@ -164,6 +168,7 @@ let clean({
     Directory = directory
     Date = date
     BytesToFree = bytesToFree
+    FreeUntil = freeUntil
     CleanMode = cleanMode
     Verbose = verbose
 }: CleanParameters): CleanResult =
@@ -173,6 +178,8 @@ let clean({
     info $"Cleaning directory %s{directory.RawPathString}"
     if bytesToFree.IsSome then
         info $"Cleaning %d{bytesToFree.Value} bytes"
+    elif freeUntil.IsSome then
+        info $"Cleaning until %d{freeUntil.Value} bytes are free"
 
     let itemsBefore = itemCount directory
     let diskRoot = Path.GetPathRoot directory.RawPathString
@@ -180,8 +187,8 @@ let clean({
 
     let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete, scanErrorCount =
-        match date, bytesToFree with
-        | Some date, None ->
+        match date, bytesToFree, freeUntil with
+        | Some date, None, None ->
             let files = ResizeArray<IFileSystemItem>()
             let mutable errorCount = 0
             for entry in allEntries do
@@ -189,11 +196,15 @@ let clean({
                 if scanResult.NeedToRemove then files.Add(FileSystemItem(entry))
                 if scanResult.HasScanError then errorCount <- errorCount + 1
             files :> _ seq, errorCount
-        | None, Some bytes ->
+        | None, Some bytes, None ->
             allEntries
             |> Seq.sortBy getLastFileAccessDate
             |> takeBytes bytes, 0
-        | _, _ -> failwith "Invalid parameters: exactly one of date and bytesToFree should be specified."
+        | None, None, Some bytes ->
+            allEntries
+            |> Seq.sortBy getLastFileAccessDate
+            |> takeBytes (freeDiskSpaceBefore - bytes), 0
+        | _, _, _ -> failwith "Invalid parameters: exactly one of date, bytesToFree and freeUntil should be specified."
 
 
     let states =
