@@ -14,8 +14,8 @@ Usage
 Simply execute `Vacuum.exe`. It will remove any entries in your temp directory
 that weren't touched in the last month.
 
-"Entry" is either a file or a directory. Directory counts as "touched" if any of
-its children was touched in the month period. Vacuum considers the following
+"Entry" is either a file or a directory. A directory counts as "touched" if any of
+its children was touched in the last month. Vacuum considers the following
 dates when examining the files (as they're reported by the filesystem):
 
 - creation date
@@ -26,10 +26,10 @@ Main command-line arguments:
 - `(-d|--directory) <path>`: path to the temporary directory which should be
   cleaned up. Falls back to [`Path.GetTempPath`][path.get-temp-path] by default
   (which uses certain environment variables to determine the path).
-- `(-p|--period) <number>`: number of days for entry to be untouched before
+- `(-p|--period) <number>`: number of days for an entry to be untouched before
   being deleted by Vacuum. 30 by default.
-- `(-s|--space) (<number>|<number>k|<number>m|<number>g)` amount of space to clean up (`k`
-  = kibibytes, m = mebibytes, g = gibibytes). In space-cleaning mode, Vacuum will still clean
+- `(-s|--space) (<number>|<number>k|<number>m|<number>g)`: amount of space to clean up (`k`
+  = kibibytes, `m` = mebibytes, g = gibibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
 - `(-F|--free) (<number>|<number>k|<number>m)`: amount of space to be free after the
   clean (`k` = kibibytes, `m` = mebibytes). The oldest items will still be cleaned up first.
@@ -45,7 +45,7 @@ Main command-line arguments:
   > This will call `Vacuum --space 10737418240` (i.e. 10 gibibytes).
 
 - `(-f|--force)`: forces Vacuum to delete the entries it wasn't able to recycle.
-- `(-w|--what-if)`: only prints the files that will be deleted instead of actually deleting them.
+- `(-w|--what-if)`: only prints the files that would be deleted instead of actually deleting them.
 - `(-v|--verbose)`: show exception call stacks.
 
 Consult the embedded help system for the detailed parameter manual:
