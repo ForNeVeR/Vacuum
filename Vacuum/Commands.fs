@@ -7,6 +7,7 @@ let private parseSuffix (s: string) =
     match s with
     | size when size.ToLowerInvariant().EndsWith("k") -> 1024L * (int64 <| allButLast)
     | size when size.ToLowerInvariant().EndsWith("m") -> 1024L * 1024L * (int64 <| allButLast)
+    | size when size.ToLowerInvariant().EndsWith("g") -> 1024L * 1024L * 1024L * (int64 <| allButLast)
     | size -> int64 size
 
 [<Verb("clean", HelpText = "Clean the temporary directory.")>]
@@ -27,7 +28,7 @@ type Clean =
         [<Option(
             's',
             "space",
-            HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k and m postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes.")>]
+            HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k, m and g postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes, 10g = 10 gibibytes.")>]
         Space: string option
 
         [<Option(
