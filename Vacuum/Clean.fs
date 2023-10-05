@@ -203,7 +203,7 @@ let clean({
         | None, None, Some bytes ->
             allEntries
             |> Seq.sortBy getLastFileAccessDate
-            |> takeBytes (freeDiskSpaceBefore - bytes), 0
+            |> takeBytes (bytes - freeDiskSpaceBefore), 0
         | _, _, _ -> failwith "Invalid parameters: exactly one of date, bytesToFree and freeUntil should be specified."
 
 
