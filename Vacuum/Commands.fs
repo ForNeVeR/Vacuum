@@ -20,7 +20,7 @@ type Clean =
         [<Option(
             's',
             "space",
-            HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k and m postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes.")>]
+            HelpText = "Amount of space to be freed disregard the dates. Off by default. Supports k, m and g postfix. For example, 10k = 10 kibibytes, 10m = 10 mebibytes, 10g = 10 gibibytes.")>]
         Space: string option
 
         [<Option(
@@ -46,5 +46,6 @@ type Clean =
         match this.Space with
         | Some space when space.ToLowerInvariant().EndsWith("k") -> Some (1024L * (int64 <| allButLast space))
         | Some space when space.ToLowerInvariant().EndsWith("m") -> Some (1024L * 1024L * (int64 <| allButLast space))
+        | Some space when space.ToLowerInvariant().EndsWith("g") -> Some (1024L * 1024L * 1024L * (int64 <| allButLast space))
         | Some space -> Some (int64 space)
         | None -> None
