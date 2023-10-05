@@ -29,7 +29,7 @@ Main command-line arguments:
 - `(-p|--period) <number>`: number of days for an entry to be untouched before
   being deleted by Vacuum. 30 by default.
 - `(-s|--space) (<number>|<number>k|<number>m|<number>g)`: amount of space to clean up (`k`
-  = kibibytes, `m` = mebibytes, g = gibibytes). In space-cleaning mode, Vacuum will still clean
+  = kibibytes, `m` = mebibytes, `g` = gibibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
 
   > **Pro Tip:**
