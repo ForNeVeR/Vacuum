@@ -28,8 +28,8 @@ Main command-line arguments:
   (which uses certain environment variables to determine the path).
 - `(-p|--period) <number>`: number of days for entry to be untouched before
   being deleted by Vacuum. 30 by default.
-- `(-s|--space) (<number>|<number>k|<number>m)` amount of space to clean up (`k`
-  = kibibytes, m = mebibytes). In space-cleaning mode, Vacuum will still clean
+- `(-s|--space) (<number>|<number>k|<number>m|<number>g)` amount of space to clean up (`k`
+  = kibibytes, m = mebibytes, g = gibibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
 - `(-F|--free) (<number>|<number>k|<number>m)`: amount of space to be free after the
   clean (`k` = kibibytes, `m` = mebibytes). The oldest items will still be cleaned up first.
