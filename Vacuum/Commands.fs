@@ -2,6 +2,13 @@
 
 open CommandLine
 
+let private parseSuffix (s: string) =
+    let allButLast = s.Substring (0, s.Length - 1)
+    match s with
+    | size when size.ToLowerInvariant().EndsWith("k") -> 1024L * (int64 <| allButLast)
+    | size when size.ToLowerInvariant().EndsWith("m") -> 1024L * 1024L * (int64 <| allButLast)
+    | size -> int64 size
+
 [<Verb("clean", HelpText = "Clean the temporary directory.")>]
 type Clean =
     {
@@ -24,6 +31,12 @@ type Clean =
         Space: string option
 
         [<Option(
+            'F',
+            "free",
+            HelpText = "Free until the disk has this amount of space left. Off by default. Supports k, m and g postfix. For example, 10g = 10 gibibytes." )>]
+        Free: string option
+
+        [<Option(
             'f',
             "force",
             HelpText = "Force to delete entries that weren't movable into the recycle bin.")>]
@@ -41,10 +54,9 @@ type Clean =
             HelpText = "Verbose error messages.")>]
         Verbose: bool
     }
+
     member this.BytesToFree =
-        let allButLast (s : string) = s.Substring (0, s.Length - 1)
-        match this.Space with
-        | Some space when space.ToLowerInvariant().EndsWith("k") -> Some (1024L * (int64 <| allButLast space))
-        | Some space when space.ToLowerInvariant().EndsWith("m") -> Some (1024L * 1024L * (int64 <| allButLast space))
-        | Some space -> Some (int64 space)
-        | None -> None
+        this.Space |> Option.map parseSuffix
+    
+    member this.FreeUntil =
+        this.Free |> Option.map parseSuffix
