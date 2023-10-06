@@ -31,8 +31,8 @@ Main command-line arguments:
 - `(-s|--space) (<number>|<number>k|<number>m|<number>g)`: amount of space to clean up (`k`
   = kibibytes, `m` = mebibytes, `g` = gibibytes). In space-cleaning mode, Vacuum will still clean
   up the oldest items first.
-- `(-F|--free) (<number>|<number>k|<number>m)`: amount of space to be free after the
-  clean (`k` = kibibytes, `m` = mebibytes). The oldest items will still be cleaned up first.
+- `(-F|--free) (<number>|<number>k|<number>m|<number>g)`: amount of space to be free after the
+  clean (`k` = kibibytes, `m` = mebibytes, `g` = gibibytes). The oldest items will still be cleaned up first.
 
   > **Pro Tip:**
   >
