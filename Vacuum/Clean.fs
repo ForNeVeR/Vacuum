@@ -185,10 +185,18 @@ let clean({
     let diskRoot = Path.GetPathRoot directory.RawPathString
     let freeDiskSpaceBefore = NativeFunctions.getFreeDiskSpace diskRoot
 
+    let bytesToFree' =
+        match bytesToFree, freeUntil with
+        | Some _, None -> bytesToFree
+        | None, Some bytes ->
+            Some <| bytes - freeDiskSpaceBefore
+        | None, None -> None
+        | Some _, Some _ -> failwith "Invalid parameters: both bytesToFree and freeUntil are passed."
+
     let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete, scanErrorCount =
-        match date, bytesToFree, freeUntil with
-        | Some date, None, None ->
+        match date, bytesToFree' with
+        | Some date, None ->
             let files = ResizeArray<IFileSystemItem>()
             let mutable errorCount = 0
             for entry in allEntries do
@@ -196,15 +204,11 @@ let clean({
                 if scanResult.NeedToRemove then files.Add(FileSystemItem(entry))
                 if scanResult.HasScanError then errorCount <- errorCount + 1
             files :> _ seq, errorCount
-        | None, Some bytes, None ->
+        | None, Some bytes ->
             allEntries
             |> Seq.sortBy getLastFileAccessDate
             |> takeBytes bytes, 0
-        | None, None, Some bytes ->
-            allEntries
-            |> Seq.sortBy getLastFileAccessDate
-            |> takeBytes (bytes - freeDiskSpaceBefore), 0
-        | _, _, _ -> failwith "Invalid parameters: exactly one of date, bytesToFree and freeUntil should be specified."
+        | _, _ -> failwith "Invalid parameters: exactly one of date, bytesToFree and freeUntil should be passed."
 
 
     let states =
