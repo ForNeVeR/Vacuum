@@ -175,12 +175,6 @@ let clean({
     let stopwatch = Stopwatch()
     stopwatch.Start()
 
-    info $"Cleaning directory %s{directory.RawPathString}"
-    if bytesToFree.IsSome then
-        info $"Cleaning %d{bytesToFree.Value} bytes"
-    elif freeUntil.IsSome then
-        info $"Cleaning until %d{freeUntil.Value} bytes are free"
-
     let itemsBefore = itemCount directory
     let diskRoot = Path.GetPathRoot directory.RawPathString
     let freeDiskSpaceBefore = NativeFunctions.getFreeDiskSpace diskRoot
@@ -189,9 +183,12 @@ let clean({
         match bytesToFree, freeUntil with
         | Some _, None -> bytesToFree
         | None, Some bytes ->
-            Some <| bytes - freeDiskSpaceBefore
+            bytes - freeDiskSpaceBefore |> max 0 |> Some
         | None, None -> None
         | Some _, Some _ -> failwith "Invalid parameters: both bytesToFree and freeUntil are passed."
+    
+    info $"Cleaning directory %s{directory.RawPathString}"
+    bytesToFree' |> Option.iter (fun bytes -> info $"Cleaning %d{bytes} bytes")
 
     let allEntries = Directory.enumerateFileSystemEntries directory
     let filesToDelete, scanErrorCount =
