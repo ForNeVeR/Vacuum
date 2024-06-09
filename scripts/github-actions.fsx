@@ -65,7 +65,7 @@ let workflows = [
 
             step(
                 name = "Set up .NET SDK",
-                uses = "actions/setup-dotnet@v1",
+                uses = "actions/setup-dotnet@v4",
                 options = Map.ofList ["dotnet-version", "6.0.x"]
             )
 
