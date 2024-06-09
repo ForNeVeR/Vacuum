@@ -1,4 +1,8 @@
-﻿module Vacuum.NativeFunctions
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
+module Vacuum.NativeFunctions
 
 open System
 open System.ComponentModel

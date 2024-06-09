@@ -1,4 +1,8 @@
-﻿namespace Vacuum.Tests.Framework
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
+namespace Vacuum.Tests.Framework
 
 open System
 open Vacuum.Tests.Framework.FileSystemUtils

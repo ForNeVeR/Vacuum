@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
 #r "nuget: Generaptor.Library, 1.5.0"
 
 open System
@@ -8,7 +12,9 @@ open type Generaptor.Library.Actions
 open type Generaptor.Library.Patterns
 
 let mainBranch = "master"
+
 let windowsImage = "windows-2019"
+let linuxImage = "ubuntu-22.04"
 
 let workflows = [
     workflow "main" [
@@ -22,6 +28,20 @@ let workflows = [
             runsOn windowsImage
             checkout
             yield! dotNetBuildAndTest(sdkVersion = "6.0.x")
+        ]
+
+        job "encoding" [
+            runsOn linuxImage
+            checkout
+
+            step(name = "Verify encoding", shell = "pwsh", run = "scripts/Test-Encoding.ps1")
+        ]
+
+        job "licenses" [
+            runsOn linuxImage
+            checkout
+
+            step(name = "REUSE license check", uses = "fsfe/reuse-action@v3")
         ]
     ]
     workflow "release" [

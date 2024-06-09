@@ -1,4 +1,8 @@
-﻿module internal Vacuum.Console
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
+module internal Vacuum.Console
 
 open System
 open System.Globalization

@@ -1,4 +1,8 @@
-﻿namespace Vacuum
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
+namespace Vacuum
 
 open System
 open System.IO

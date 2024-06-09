@@ -1,0 +1,17 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: TruePath
+Upstream-Contact: Friedrich von Never <friedrich@fornever.me>
+Source: https://github.com/ForNeVeR/Vacuum
+
+Files: .idea/**/*
+Copyright: Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+License: MIT
+
+Files: *.DotSettings
+Copyright: Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+License: MIT
+
+Files: third-party/*
+License: CC0-1.0
+Copyright: N/A
+Comment: Files in third-party/ are describing the third-party licenses, and aren't actually part of the project.

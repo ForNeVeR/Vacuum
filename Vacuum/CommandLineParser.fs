@@ -1,4 +1,8 @@
-﻿module Vacuum.CommandLineParser
+// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+//
+// SPDX-License-Identifier: MIT
+
+module Vacuum.CommandLineParser
 
 open CommandLine
 

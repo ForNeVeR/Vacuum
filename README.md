@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+
+SPDX-License-Identifier: MIT
+-->
+
 Vacuum [![Status Aquana][status-aquana]][andivionian-status-classifier]
 ======
 
@@ -60,23 +66,28 @@ Documentation
 - [Changelog][changelog]
 - [Contributor Guide][docs.contributing]
 - [Maintainership][maintainership]
-- [License (MIT)][license]
 - [Third-party software][third-party]
 
 Download
 --------
-
 To download Vacuum binary distribution, please visit [GitHub releases
 section][releases].
+
+License
+-------
+The project is distributed under the terms of [the MIT license][docs.license].
+
+The license indication in the project's sources is compliant with the [REUSE specification v3.0][reuse.spec].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [changelog]: ./CHANGELOG.md
 [docs.contributing]: CONTRIBUTING.md
+[docs.license]: ./LICENSE.md
 [docs.pwsh-numeric-literals]: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_numeric_literals
 [dotnet]: https://dot.net/
-[license]: ./LICENSE.md
 [maintainership]: ./MAINTAINERSHIP.md
 [path.get-temp-path]: https://docs.microsoft.com/en-us/dotnet/api/system.io.path.gettemppath?view=net-5.0&tabs=windows
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
+[reuse.spec]: https://reuse.software/spec/
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
 [third-party]: THIRD-PARTY-NOTICES.md
