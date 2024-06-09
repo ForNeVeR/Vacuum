@@ -1,56 +1,51 @@
-﻿name: Release
+# This file is auto-generated.
+name: Release
 on:
   push:
     tags:
-      - 'v*'
-
+    - v*
+  workflow_dispatch: 
 jobs:
   release:
     runs-on: windows-2019
     env:
-      DOTNET_NOLOGO: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
     steps:
-      - name: Read version from ref
-        id: version
-        shell: pwsh
-        run: Write-Output "::set-output name=version::$($env:GITHUB_REF -replace '^refs/tags/v', '')"
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Publish
-        run: dotnet publish Vacuum --runtime win-x64 --self-contained --configuration Release --output ./publish -p:PublishTrimmed=true -p:PublishSingleFile=true
-      - name: Package distribution
-        shell: pwsh
-        run: Compress-Archive ./publish/* ./vacuum-v${{ steps.version.outputs.version }}.zip
-
-      - name: Read changelog
-        id: changelog
-        uses: ForNeVeR/ChangelogAutomation.action@v1
-        with:
-          output: ./release-notes.md
-
-      - name: Create release
-        id: release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Vacuum v${{ steps.version.outputs.version }}
-          body_path: ./release-notes.md
-      - name: Upload distribution
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_name: vacuum-v${{ steps.version.outputs.version }}.zip
-          asset_path: ./vacuum-v${{ steps.version.outputs.version }}.zip
-          asset_content_type: application/zip
+    - id: version
+      name: Read version from ref
+      shell: pwsh
+      run: Write-Output "::set-output name=version::$($env:GITHUB_REF -replace '^refs/tags/v', '')"
+    - uses: actions/checkout@v4
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Publish
+      run: dotnet publish Vacuum --runtime win-x64 --self-contained --configuration Release --output ./publish -p:PublishTrimmed=true -p:PublishSingleFile=true
+    - name: Package distribution
+      shell: pwsh
+      run: Compress-Archive ./publish/* ./vacuum-v${{ steps.version.outputs.version }}.zip
+    - id: changelog
+      name: Read changelog
+      uses: ForNeVeR/ChangelogAutomation.action@v1
+      with:
+        output: ./release-notes.md
+    - id: release
+      name: Create release
+      uses: actions/create-release@v1
+      with:
+        body_path: ./release-notes.md
+        release_name: Vacuum v${{ steps.version.outputs.version }}
+        tag_name: ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload distribution
+      uses: actions/upload-release-asset@v1
+      with:
+        asset_content_type: application/zip
+        asset_name: vacuum-v${{ steps.version.outputs.version }}.zip
+        asset_path: ./vacuum-v${{ steps.version.outputs.version }}.zip
+        upload_url: ${{ steps.release.outputs.upload_url }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
