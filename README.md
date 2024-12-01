@@ -77,7 +77,7 @@ License
 -------
 The project is distributed under the terms of [the MIT license][docs.license].
 
-The license indication in the project's sources is compliant with the [REUSE specification v3.0][reuse.spec].
+The license indication in the project's sources is compliant with the [REUSE specification v3.3][reuse.spec].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier
 [changelog]: ./CHANGELOG.md
@@ -88,6 +88,6 @@ The license indication in the project's sources is compliant with the [REUSE spe
 [maintainership]: ./MAINTAINERSHIP.md
 [path.get-temp-path]: https://docs.microsoft.com/en-us/dotnet/api/system.io.path.gettemppath?view=net-5.0&tabs=windows
 [releases]: https://github.com/ForNeVeR/Vacuum/releases
-[reuse.spec]: https://reuse.software/spec/
+[reuse.spec]: https://reuse.software/spec-3.3/
 [status-aquana]: https://img.shields.io/badge/status-aquana-yellowgreen.svg
 [third-party]: THIRD-PARTY-NOTICES.md
