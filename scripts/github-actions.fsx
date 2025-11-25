@@ -14,7 +14,7 @@ open type Generaptor.Library.Patterns
 let mainBranch = "master"
 
 let windowsImage = "windows-2019"
-let linuxImage = "ubuntu-22.04"
+let linuxImage = "ubuntu-24.04"
 
 let workflows = [
     workflow "main" [
