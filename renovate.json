@@ -7,6 +7,17 @@
     "automergeType": "branch",
     "customManagers": [
         {
+            "description": "Update the Generaptor package.",
+            "customType": "regex",
+            "managerFilePatterns": [
+                "scripts/github-actions.fsx"
+            ],
+            "matchStrings": [
+                "#r \"nuget: (?<depName>.+), (?<currentValue>\\S+)\""
+            ],
+            "datasourceTemplate": "nuget"
+        },
+        {
             "description": "Update the GitHub Actions runners.",
             "customType": "regex",
             "managerFilePatterns": [
