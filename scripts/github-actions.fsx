@@ -32,6 +32,7 @@ let workflows = [
     workflow "main" [
         name "Main"
         onPushTo mainBranch
+        onPushTo "renovate/**"
         onPullRequestTo mainBranch
         onSchedule(day = DayOfWeek.Saturday)
         onWorkflowDispatch
