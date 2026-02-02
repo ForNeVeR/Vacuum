@@ -1,17 +1,20 @@
 <!--
-SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+SPDX-FileCopyrightText: 2024-2026 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
 
 SPDX-License-Identifier: MIT
 -->
 
-﻿# Changelog
+# Changelog
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning v2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] (1.7.1)
+## [Unreleased] (1.8.0)
+### Changed
+- Update to .NET 10.
+
 ### Added
 - Free disk space report is printed after the cleanup.
 
