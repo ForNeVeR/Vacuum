@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+// SPDX-FileCopyrightText: 2024-2026 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
 //
 // SPDX-License-Identifier: MIT
 
@@ -23,6 +23,36 @@ let workflows = [
         onPullRequestTo mainBranch
         onSchedule(day = DayOfWeek.Saturday)
         onWorkflowDispatch
+
+        let dotNetJob id steps = job id [
+            setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+            setEnv "DOTNET_NOLOGO" "1"
+            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+
+            step(
+                name = "Check out the sources",
+                uses = "actions/checkout@v1"
+            )
+            step(
+                name = "Set up .NET SDK",
+                uses = "actions/setup-dotnet@v1"
+            )
+            step(
+                name = "Cache NuGet packages",
+                uses = "actions/cache@v1",
+                options = Map.ofList [
+                    "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}"
+                    "path", "${{ env.NUGET_PACKAGES }}"
+                ]
+            )
+
+            yield! steps
+        ]
+
+        dotNetJob "verify-workflows" [
+            runsOn "ubuntu-24.04"
+            step(run = "dotnet fsi ./scripts/github-actions.fsx verify")
+        ]
 
         job "main" [
             runsOn windowsImage
@@ -112,4 +142,4 @@ let workflows = [
     ]
 ]
 
-EntryPoint.Process fsi.CommandLineArgs workflows
+exit <| EntryPoint.Process fsi.CommandLineArgs workflows

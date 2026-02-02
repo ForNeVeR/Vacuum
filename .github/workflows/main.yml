@@ -11,20 +11,37 @@ on:
   - cron: 0 0 * * 6
   workflow_dispatch: 
 jobs:
-  main:
-    runs-on: windows-2025
+  verify-workflows:
+    runs-on: ubuntu-24.04
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
-    - uses: actions/checkout@v6
+    - name: Check out the sources
+      uses: actions/checkout@v1
     - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v1
+    - name: Cache NuGet packages
+      uses: actions/cache@v1
+      with:
+        key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
+        path: ${{ env.NUGET_PACKAGES }}
+    - run: dotnet fsi ./scripts/github-actions.fsx verify
+  main:
+    runs-on: windows-2019
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
+      NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
     - name: NuGet cache
-      uses: actions/cache@v5
+      uses: actions/cache@v4
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
         path: ${{ env.NUGET_PACKAGES }}
@@ -34,15 +51,15 @@ jobs:
       run: dotnet test
       timeout-minutes: 10
   encoding:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     - name: Verify encoding
       shell: pwsh
       run: scripts/Test-Encoding.ps1
   licenses:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     - name: REUSE license check
-      uses: fsfe/reuse-action@v6
+      uses: fsfe/reuse-action@v3
