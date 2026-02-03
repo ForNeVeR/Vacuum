@@ -41,10 +41,7 @@ let workflows = [
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
 
-            step(
-                name = "Check out the sources",
-                usesSpec = Auto "actions/checkout"
-            )
+            checkOut
             step(
                 name = "Set up .NET SDK",
                 usesSpec = Auto "actions/setup-dotnet"
