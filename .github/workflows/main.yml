@@ -23,7 +23,7 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
     - name: Check out the sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v1
     - name: Cache NuGet packages
@@ -40,7 +40,7 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
     - name: Check out the sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v1
     - name: Cache NuGet packages
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Check out the sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Verify encoding
       shell: pwsh
       run: scripts/Test-Encoding.ps1
@@ -65,6 +65,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Check out the sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: REUSE license check
       uses: fsfe/reuse-action@v3
