@@ -1,6 +1,9 @@
-// SPDX-FileCopyrightText: 2024-2026 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
-//
-// SPDX-License-Identifier: MIT
+let licenseHeader = """
+# SPDX-FileCopyrightText: 2024-2026 Vacuum contributors <https://github.com/ForNeVeR/Vacuum>
+#
+# SPDX-License-Identifier: MIT
+
+# This file is auto-generated.""".Trim()
 
 #r "nuget: Generaptor, 1.9.1"
 
@@ -15,6 +18,12 @@ let windowsImage = "windows-2019"
 let linuxImage = "ubuntu-22.04"
 
 let workflows = [
+    let workflow name steps =
+        workflow name [
+            header licenseHeader
+            yield! steps
+        ]
+
     let checkOut = step(
         name = "Check out the sources",
         usesSpec = Auto "actions/checkout"
