@@ -54,7 +54,7 @@ jobs:
       run: dotnet test
       timeout-minutes: 10
   encoding:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Check out the sources
       uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
       shell: pwsh
       run: scripts/Test-Encoding.ps1
   licenses:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Check out the sources
       uses: actions/checkout@v4

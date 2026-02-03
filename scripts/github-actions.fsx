@@ -15,7 +15,7 @@ open type Generaptor.GitHubActions.Commands
 let mainBranch = "master"
 
 let windowsImage = "windows-2019"
-let linuxImage = "ubuntu-22.04"
+let linuxImage = "ubuntu-24.04"
 
 let workflows = [
     let workflow name steps =
