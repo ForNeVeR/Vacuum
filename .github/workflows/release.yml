@@ -33,7 +33,7 @@ jobs:
       run: Compress-Archive ./publish/* ./vacuum-v${{ steps.version.outputs.version }}.zip
     - id: changelog
       name: Read changelog
-      uses: ForNeVeR/ChangelogAutomation.action@v1
+      uses: ForNeVeR/ChangelogAutomation.action@v2
       with:
         output: ./release-notes.md
     - id: release
