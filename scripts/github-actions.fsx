@@ -39,7 +39,7 @@ let workflows = [
             )
             step(
                 name = "Cache NuGet packages",
-                uses = "actions/cache@v1",
+                uses = "actions/cache@v4",
                 options = Map.ofList [
                     "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}"
                     "path", "${{ env.NUGET_PACKAGES }}"
