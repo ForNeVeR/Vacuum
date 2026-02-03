@@ -2,14 +2,12 @@
 //
 // SPDX-License-Identifier: MIT
 
-#r "nuget: Generaptor.Library, 1.5.0"
+#r "nuget: Generaptor, 1.9.1"
 
 open System
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
-open type Generaptor.Library.Actions
-open type Generaptor.Library.Patterns
 
 let mainBranch = "master"
 
@@ -17,6 +15,11 @@ let windowsImage = "windows-2019"
 let linuxImage = "ubuntu-22.04"
 
 let workflows = [
+    let checkOut = step(
+        name = "Check out the sources",
+        usesSpec = Auto "actions/checkout"
+    )
+
     workflow "main" [
         name "Main"
         onPushTo mainBranch
@@ -54,22 +57,29 @@ let workflows = [
             step(run = "dotnet fsi ./scripts/github-actions.fsx verify")
         ]
 
-        job "main" [
+        dotNetJob "main" [
             runsOn windowsImage
-            checkout
-            yield! dotNetBuildAndTest(sdkVersion = "6.0.x")
+            step(
+                name = "Build",
+                run = "dotnet build"
+            )
+            step(
+                name = "Test",
+                run = "dotnet test",
+                timeoutMin = 10
+            )
         ]
 
         job "encoding" [
             runsOn linuxImage
-            checkout
+            checkOut
 
             step(name = "Verify encoding", shell = "pwsh", run = "scripts/Test-Encoding.ps1")
         ]
 
         job "licenses" [
             runsOn linuxImage
-            checkout
+            checkOut
 
             step(name = "REUSE license check", uses = "fsfe/reuse-action@v3")
         ]
@@ -91,7 +101,7 @@ let workflows = [
                 run = "Write-Output \"::set-output name=version::$($env:GITHUB_REF -replace '^refs/tags/v', '')\""
             )
 
-            checkout
+            checkOut
 
             step(
                 name = "Set up .NET SDK",
