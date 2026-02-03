@@ -29,8 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 ProjectSection(SolutionItems) = preProject
 	.github\workflows\main.yml = .github\workflows\main.yml
 	.github\workflows\release.yml = .github\workflows\release.yml
-	.github\workflows\main.yml.license = .github\workflows\main.yml.license
-	.github\workflows\release.yml.license = .github\workflows\release.yml.license
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{2BD24051-E549-46EB-944B-DA097F31A1A0}"
