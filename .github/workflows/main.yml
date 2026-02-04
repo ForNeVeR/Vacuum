@@ -34,7 +34,7 @@ jobs:
         path: ${{ env.NUGET_PACKAGES }}
     - run: dotnet fsi ./scripts/github-actions.fsx verify
   main:
-    runs-on: windows-2019
+    runs-on: windows-2025
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1

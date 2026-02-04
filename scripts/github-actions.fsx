@@ -14,7 +14,7 @@ open type Generaptor.GitHubActions.Commands
 
 let mainBranch = "master"
 
-let windowsImage = "windows-2019"
+let windowsImage = "windows-2025"
 let linuxImage = "ubuntu-24.04"
 
 let workflows = [
