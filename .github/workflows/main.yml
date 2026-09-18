@@ -17,7 +17,7 @@ on:
   workflow_dispatch: 
 jobs:
   verify-workflows:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
@@ -55,7 +55,7 @@ jobs:
       run: dotnet test
       timeout-minutes: 10
   encoding:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Check out the sources
       uses: actions/checkout@v7
@@ -63,7 +63,7 @@ jobs:
       shell: pwsh
       run: scripts/Test-Encoding.ps1
   licenses:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Check out the sources
       uses: actions/checkout@v7

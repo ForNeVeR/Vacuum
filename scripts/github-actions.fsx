@@ -15,7 +15,7 @@ open type Generaptor.GitHubActions.Commands
 let mainBranch = "master"
 
 let windowsImage = "windows-2025"
-let linuxImage = "ubuntu-24.04"
+let linuxImage = "ubuntu-26.04"
 
 let workflows = [
     let workflow name steps =
@@ -60,7 +60,7 @@ let workflows = [
         ]
 
         dotNetJob "verify-workflows" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             step(run = "dotnet fsi ./scripts/github-actions.fsx verify")
         ]
 
